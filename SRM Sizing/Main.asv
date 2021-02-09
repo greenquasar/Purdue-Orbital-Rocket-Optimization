@@ -9,7 +9,6 @@
 %r_max = case diameter / 2
 %propellant characteristics (density probably)
 
-function [] = SRM(dt, etc)
 
 %start program execution
 %create empty arrays for A, p_c, r_b
@@ -27,21 +26,11 @@ function [] = SRM(dt, etc)
 
 %compute updated burn surface area
 
-%compute updated chamber pressure
-
-%compute mass flow, exit mach, exit pressure, exit velocity, thrust
-
-%calculate current mass, Δm, ΔV 
-
 %t+=dt
 
-%burn time = t
 
-
+%return outputs
 
 function [area] = Surface_Area(w, shape)
-    switch(shape)
-        case 'aft finocyl'
-            area = 1;
-    end
-    area = 0;
+    area = 0
+    
