@@ -9,7 +9,8 @@
 %r_max = case diameter / 2
 %propellant characteristics (density probably)
 
-function [] = SRM(dt, etc)
+function [] = SRM(dt, grainShape, length, diameter, propDensity)
+r_max = diameter/2;
 
 %start program execution
 %create empty arrays for A, p_c, r_b
