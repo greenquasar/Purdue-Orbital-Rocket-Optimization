@@ -15,7 +15,14 @@ function [] = SRM(dt, etc)
 %create empty arrays for A, p_c, r_b
 %time = 0 and web distance = 0
 
+
+%initialized arrays for burn surface area,chamber pressure,
+%rate of burn
+A=[];p_c=[];r_b=[]; 
+
 %calculate initial burn surface area, A
+%assumed to be circular
+
 
 %compute initial chamber pressure, p_c
 
