@@ -49,6 +49,8 @@ A=[];p_c=[];r_b=[];
 function [area] = Surface_Area(w, shape)
     switch(shape)
         case 'aft finocyl'
-            area = 1;
+            area = 1;%todo
+        case 'circular'
+            area = 1;%todo
     end
     area = 0;
