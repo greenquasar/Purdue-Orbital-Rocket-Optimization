@@ -1,6 +1,16 @@
-%solid rocket motor sizing code
+%% solid rocket motor sizing code
 
-%inputs
+%% Constants (SI)
+g = 9.81; 
+
+
+
+
+
+
+
+
+%% Inputs
 %time step [seconds]
 %grain shape = string ex. 'aft finocyl' must be matched by a case in
 %  surface area function
@@ -9,6 +19,7 @@
 %r_max = case diameter / 2
 %propellant characteristics (density probably)
 
+%% Functions
 function [] = SRM(dt, grainShape, length, diameter, isp)
 r_max = diameter/2;
 
@@ -26,6 +37,7 @@ A=[];p_c=[];r_b=[];
 
 
 %compute initial chamber pressure, p_c
+p_c = [a*rho_p*A_b*c_star/(g*A_t)]^(1/(1-n));
 
 %compute initial burn rate, r_b
 
