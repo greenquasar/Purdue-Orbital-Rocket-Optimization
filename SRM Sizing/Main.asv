@@ -26,12 +26,16 @@ r_max = diameter/2;
 %start program execution
 %create empty arrays for A, p_c, r_b
 %time = 0 and web distance = 0
+T=[]; W=[];
+T(1) = 0;
+W(1) = 0;
 
 
 %initialized arrays for burn surface area,chamber pressure,
 %rate of burn
-A=[];p_c=[];r_b=[]; 
+A=[]; P_c=[]; R_b=[]; 
 
+A(1) = Surface_Area('circular', W(1), length);
 %calculate initial burn surface area, A
 %assumed to be circular
 
@@ -59,11 +63,12 @@ p_c = [a*rho_p*A_b*c_star/(g*A_t)]^(1/(1-n));
 
 
 
-function [area] = Surface_Area(w, shape)
+function [area] = Surface_Area(shape, w, l)
+%shape, the cross sectional shape of the 
     switch(shape)
         case 'aft finocyl'
             area = 1;%todo
         case 'circular'
-            area = 1;%todo
+            area = 2*pi*;%todo
     end
     area = 0;

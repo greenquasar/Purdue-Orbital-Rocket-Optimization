@@ -25,15 +25,22 @@ r_max = diameter/2;
 
 %start program execution
 %create empty arrays for A, p_c, r_b
+<<<<<<< Updated upstream
 t=0; dt=.0001;
+=======
+%time = 0 and web distance = 0
+T=[]; W=[];
+T(1) = 0;
+W(1) = 0;
+
+>>>>>>> Stashed changes
 
 %initialized arrays for burn surface area,chamber pressure,
 %rate of burn
-A=[];p_c=[];r_b=[]; 
+A=[]; P_c=[]; R_b=[]; 
 
+A(1) = Surface_Area('circular', W(1), length);
 %calculate initial burn surface area, A
-%assumed to be circular
-
 
 %throat area
 A_t = (s*rho_p*a*c_star)/(g*p_c^(1-n));
@@ -67,11 +74,16 @@ while r < r_max
 
 
 
-function [area] = Surface_Area(w, shape)
+function area = Surface_Area(shape, w, l)
+%shape, the cross sectional shape of the 
     switch(shape)
-        case 'aft finocyl'
-            area = 1;%todo
+        %case 'aft finocyl'
+        %    area = ;%todo
         case 'circular'
-            area = 1;%todo
+            area = 2*pi*w*l;
+        case 'square'
+            area = 8*w*l;
+        otherwise
+            fprintf("Invalid shape parameter, see Surface_Area function for valid choices");
+            area = 0;
     end
-    area = 0;
