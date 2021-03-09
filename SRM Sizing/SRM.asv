@@ -97,13 +97,13 @@ function vol = volume(width, length, shape)
 %width, width of propellant grain
 %length, length of propellant grain
 %shape, geometry of propellant grain
-    %get inner diameter from another function
+    %get inner diameter
     switch(shape)
         case 'circular'
-            vol = (width - innerDiam)^2 * pi * length;
+            vol = width / (2 * bRate);
         otherwise
             fprintf("Invalid shape parameter, see burnTime function for valid choices");
-            vol = 0;
+            burnTime = 0;
     end
 end
 function [optLength, optWidth] = optimizeDims(minLength, maxLength, ratio, deltaV, bRate, thrust, propDens, dt)
