@@ -14,10 +14,11 @@ isp1 = 276; %[s]
 isp2 = 276; %[s]
 propMassFraction1 = 0.8; %between 0 and 1
 propMassFraction2 = 0.8; %between 0 and 1
-payloadMass = 15; %[kg]
-deltaVtotal = 3711.3; %[m/s]for a single stage
+payloadMass = 1.25; %[kg]
+deltaVtotal = 8000; %[m/s]for a single stage
 deltaVsplit = 0.5; %between 0 and 1 (1 is all first stage, 0 is all second stage)
 finenessRatio = 10; %[dimensionless] length/diameter
+%the density values are combined fuel and oxidizer weighted by o:f ratio
 propDensity1 = 1252; %[kg/m^3]
 propDensity2 = 1252; %[kg/m^3]
 %use below two to calculate full rocket length

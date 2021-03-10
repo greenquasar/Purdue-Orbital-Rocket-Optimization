@@ -51,7 +51,7 @@ function [out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, 
 % IMPORTANT: If you are using this on a computer for the first time,
 % you must download the CEA files and build the filepath for your own
 % computer
-addpath('C:\Users\mikew\Downloads\Engine Sizing Code\Engine Sizing Code\CEA', '-end');
+addpath('..\CEAasdf', '-end');
 savepath();
 %% Initializations
 g = 9.81; %acceleleration due to gravity [m/s^2]
