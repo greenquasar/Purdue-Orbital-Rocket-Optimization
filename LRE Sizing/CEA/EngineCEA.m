@@ -1,5 +1,5 @@
 function [cstar, isp, M, gamma, T, rho, mu, Pr, Mw, k] = EngineCEA(Pc,OF,fuel,f_t,oxidizer,o_t)
-addpath('C:\Users\mikew\Downloads\Engine Sizing Code\Engine Sizing Code\CEA');
+addpath('X:\Documents\Purdue\Orbital\purdue-orbital-mission-design\LRE Sizing\CEA');
 % CEA_ROCKET_EXAMPLE: Uses MATLAB CEA wrapper. For in-depth
 % documentation read the headers of cea_rocket_run.m,
 % cea_rocket_run_single.m, and cea_rocket_read.m
