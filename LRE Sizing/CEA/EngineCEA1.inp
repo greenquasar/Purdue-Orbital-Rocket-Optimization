@@ -1,9 +1,9 @@
 problem rocket eq
-    p(psi) = 40
-    o/f = 0.7
-    pip = 1.75, 2.7211
+    p(psi) = 1500
+    o/f = 1
+    pip = 1.75, 102.0408
 reac
-    fuel = RP-1 t(K) = 260.000
-    ox = O2(L) t(K) = 260.000
+    fuel = RP-1 t(K) = 298.000
+    ox = O2(L) t(K) = 90.000
 outp trans
 end

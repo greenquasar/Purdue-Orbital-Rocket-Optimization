@@ -51,14 +51,14 @@ function [out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, 
 % IMPORTANT: If you are using this on a computer for the first time,
 % you must download the CEA files and build the filepath for your own
 % computer
-addpath('..\CEAasdf', '-end');
+addpath('X:\Documents\Purdue\Orbital\purdue-orbital-mission-design\LRE Sizing\CEA', '-end');
 savepath();
 %% Initializations
 g = 9.81; %acceleleration due to gravity [m/s^2]
 pc = Chamber_Pressure;
 Dc = Chamber_Diameter / 39.3701;
-pe = 14.7; %exit pressure [psi] %1.09 if calculating at altitude (18 kilometers)
-pa = 14.7; %atmospheric pressure [psi] %1.09 if calculating at altitude (18 kilometers)
+pe = 14.7; %exit pressure [psi]
+pa = 14.7; %atmospheric pressure [psi]
 effcstar = 0.95; %c* efficiency [N/A]
 effcf = 0.9; %cf efficiency [N/A]
 Ru = 8314; % [J/kmol*K]
