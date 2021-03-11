@@ -1,5 +1,5 @@
 %% solid rocket motor sizing code
-function [] = Simulate(dt, shape, length, width, A_t, c_star, a, n)
+function [] = Simulate(dt, shape, length, width, A_t, c_star, a, n, c_t)
 %% Constants (SI)
 g = 9.81; 
 %% Inputs
@@ -53,7 +53,7 @@ g = 9.81;
         mdot(i) = ((W(i) - W(i-1)) * ((Surface_Area(shape, W(i), length) - A_b(i-1)) / 2));
         %compute updated chamber pressure
         %P_c(i) = (a*rho*A_b(i)*c_star/(g*A_t))^(1/(1-n));
-        P_c(i) = (mdot * c_star) / A_t;
+        P_c(i) = (mdot(i) * c_star) / A_t;
         %compute thrust
         thrust(i) = c_t * A_t * P_c(i);
         %(optional) compute mass flow, exit mach, exit pressure, exit velocity, thrust
