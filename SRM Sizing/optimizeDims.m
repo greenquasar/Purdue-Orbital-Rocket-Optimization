@@ -1,3 +1,4 @@
+%%SRM Dimensional Optimizing
 function [optLength, optWidth] = optimizeDims(minLength, maxLength, ratio, deltaV, bRate, shape, thrust, propDens, dt)
 %INPUTS
 %minLength and maxLength, the range of lengths we want to optimize for

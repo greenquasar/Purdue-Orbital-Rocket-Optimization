@@ -40,7 +40,7 @@ g = 9.81;
     R_b(1) = A_b(1)*P_c(1)^n;
 
     i = 2;
-    while W(i-1) < r_max
+    while r < r_max
         %time step
         T(i) = T(i-1) + dt;
         %current burn rate
