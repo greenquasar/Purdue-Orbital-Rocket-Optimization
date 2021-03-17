@@ -1,5 +1,5 @@
 %% solid rocket motor sizing code
-function [] = Simulate(dt, shape, length, width, innerWidth, maxPres)
+function [T, W, P_c, R_b, burn_time, A_t] = Simulate(dt, shape, length, width, innerWidth, maxPres)
 %% Constants (SI)
 g = 9.81; 
 %% Inputs
@@ -8,7 +8,7 @@ g = 9.81;
 %maximum pressure desired
 
 %GUESSTIMATED DUMMY VALUES FROM CEARUN, get better ones from CEA
-C_initial = 6.2; %C at pressure of 1000 psi (6.895 MPA)
+C = 6.2; %C at pressure of 1000 psi (6.895 MPA)
 n = .098; %Burn rate exponent at 1000 psi (6.895 MPA)
 C_star = 1077.8; %C* for 70% AP-HTPB 
 propDens = 1.5; %Average density for 70% AP-HTPB (g/cm^3)
@@ -17,22 +17,29 @@ propDens = 1.5; %Average density for 70% AP-HTPB (g/cm^3)
     r_min = innerWidth / 2;
     %finding throat area for end of burn
     A_t = (Surface_Area(shape, r_max, r_min, length) * propDens * C * C_star / g * maxPres^(1-n));
-    i = 1;
+    %set initial values
+    T(1) = 0;
+    W(1) = innerWidth / 2;
+    P_c(1) = ((Surface_Area(shape, W(1), r_min, length) * propDens * C * C_star) / (g * A_t))^(1/ 1 - n);
+    R_b(1) = C * P_c(1)^n;
+    
+    i = 2;
     while W(i-1) < r_max
         %time step
         T(i) = T(i-1) + dt;
         %Chamber pressure
-        P_c(i) = ((Surface_Area(shape, W(i), r_min, length) * propDens * C * C_star) / (g * A_t))^(1/ 1 - n);
+        P_c = [P_c, 0];
+        P_c(i) = ((Surface_Area(shape, W(i-1), r_min, length) * propDens * C * C_star) / (g * A_t))^(1/ 1 - n);
         %Thrust
-        thrust(i) = c_t * A_t * P_c(i);
+        %Thrust(i) = c_t * A_t * P_c(i);
         %Burn Rate
         R_b(i) = C * P_c(i)^n;
         %New web distance
-        W(i+1) = W(i) + R_b * dt;
+        W(i) = W(i-1) + R_b(i) * dt;
         %increment index
         i = i + 1;
     end
-    %burn time = t
+    burn_time = T(i-1);
 end
 
 function area = Surface_Area(shape, w, r_min, l)
