@@ -19,7 +19,10 @@ inp('p') = Pc;                        % Chamber pressure
 inp('p_unit') = 'psi';                % Chamber pressure units
 inp('o/f') = OF;                      % Mixture ratio
 %inp('sup') = 70;                    % Supersonic area ratios
-inp('pip') = [1.75, Pc/14.7];           % Pressure ratios
+atmoPressure = 1.45;         %atmospheric pressure at altitude where engine is running psi 
+%14.7 psi is standard 
+%1.45 is 18km
+inp('pip') = [1.75, Pc/atmoPressure];           % Pressure ratios
 inp('fuel') = fuel;               % Fuel name from thermo.inp
 inp('fuel_t') = f_t;               % Fuel inlet temperature
 inp('ox') = oxidizer;                  % Ox name from thermo.inp (O2(L))
