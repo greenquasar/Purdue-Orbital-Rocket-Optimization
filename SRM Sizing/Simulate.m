@@ -1,33 +1,39 @@
+%%TODO
+%figure out what the first p_c in the loop is calculated as so that we can
+%figure out the ERROR: Your input pressure was way too high for CEA.
+%maybe write the get initial chamber pressure, or maybe use the atmo
+%pressure to calc initial c_star
+
 %% solid rocket motor sizing code
-function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate(dt, shape, length, width, innerWidth, maxPres, f_inert)
-%% Constants (SI)
-g = 9.80665; 
-%% Inputs
-%time step [seconds]
-%rocket geometry parameters: Width, inner width, shape, and length [all in meters]
-%maximum pressure desired [Pa]
+function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate(dt, shape, length, width, innerWidth, maxPres, f_inert, atmoPressure,OF,fuel,f_t,oxidizer,o_t)
+    %% Constants (SI)
+    g = 9.80665; 
+    %% Inputs
+    %time step [seconds]
+    %rocket geometry parameters: Width, inner width, shape, and length [all in meters]
+    %maximum pressure desired [Pa]
 
-%GUESSTIMATED DUMMY VALUES FROM CEARUN, get better ones from CEA
-C = 6.2/1000; %C at pressure of 1000 psi (6.895 MPA)
-n = 0.098/1000; %Burn rate exponent at 1000 psi (6.895 MPA)
-C_star = 1077.8; %C (m/s)* for 70% AP-HTPB 
-propDens = 1500; %Average density for 70% AP-HTPB (kg/m^3)
-c_t = 0.5; %units? who needs those
+    %GUESSTIMATED DUMMY VALUES FROM CEARUN, get better ones from CEA
+    C = 6.2/1000; %C at pressure of 1000 psi (6.895 MPA)
+    n = 0.098/1000; %Burn rate exponent at 1000 psi (6.895 MPA)
+    propDens = 1500; %Average density for 70% AP-HTPB (kg/m^3) %maybe use rho from cea?
+   
+    [c_t, c_star] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t, atmoPressure);
 
-if (width <= innerWidth)
-   error("Width is less than or equal to inner width. Impossible!");
-end
+    if (width <= innerWidth)
+       error("Width is less than or equal to inner width. Impossible!");
+    end
 
     r_max = width / 2;
     r_min = innerWidth / 2;
     %finding throat area for end of burn
-    A_t = ((Surface_Area(shape, r_max, length) * propDens * C * C_star) / (g * maxPres^(1-n)));
+    A_t = ((Surface_Area(shape, r_max, length) * propDens * C * c_star) / (g * maxPres^(1-n)));
     throatDiameter = 2*sqrt(A_t/pi); %m
     %A_t = 10;
     %set initial values
     T(1) = 0;
     W(1) = r_min;
-    P_c(1) = ((Surface_Area(shape, W(1), length) * propDens * C * C_star) / (g * A_t))^(1/ 1 - n);
+    P_c(1) = ((Surface_Area(shape, W(1), length) * propDens * C * c_star) / (g * A_t))^(1/ (1 - n));
     R_b(1) = C * P_c(1)^n;
     propVol = (Area(shape, r_max)-Area(shape, r_min))*length;
     propMass = propVol*propDens;
@@ -36,11 +42,15 @@ end
     M(1)=totalMass;
     i = 2;
     while W(i-1) < r_max
+        disp(string(W(i-1)/r_max)+'\n')
         %time step
         T(i) = T(i-1) + dt;
+        %if(we gon call it?)
+        [c_t, c_star] = SRM_CEA(P_c(i),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
+        %end
         %Chamber pressure
         P_c = [P_c, 0];
-        P_c(i) = ((Surface_Area(shape, W(i-1), length) * propDens * C * C_star) / (g * A_t))^(1/ 1 - n);
+        P_c(i) = ((Surface_Area(shape, W(i-1), length) * propDens * C * c_star) / (g * A_t))^(1/ (1 - n));
         %Thrust
         Thrust(i) = c_t * A_t * P_c(i); %N %c_t changes over time! this eqn doesn't apply %T=mdot*ve (this assumes ideal nozzle design)
         %Burn Rate
@@ -62,6 +72,13 @@ end
     v_e = 2000;
     deltaVcheck = v_e*log(M(1)-M(end)); %need v_e
     specificImpulse = trapz(dt,Thrust)/(propMass*g);
+end
+
+function c_star = getInitialC_star(maxPressure, OF,fuel,f_t,oxidizer,o_t)
+    P_c = maxPressure/2;
+    while 1%%TODO
+        
+    end
 end
 
 function area = Surface_Area(shape, w, l)
