@@ -33,11 +33,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     %set initial values
     T(1) = 0;
     W(1) = r_min;
-<<<<<<< HEAD
     P_c(1) = ((Surface_Area(shape, W(1), length) * propDens * C * c_star) / (g * A_t))^(1/ (1 - n));
-=======
-    P_c(1) = ((Surface_Area(shape, W(1), length) * propDens * C * C_star) / (g * A_t))^(1/ (1 - n));
->>>>>>> f1acbf5a163720f207fc2fb64cddf40607110e9b
     R_b(1) = C * P_c(1)^n;
     propVol = (Area(shape, r_max)-Area(shape, r_min))*length;
     propMass = propVol*propDens;
@@ -54,11 +50,9 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %end
         %Chamber pressure
         P_c = [P_c, 0];
-<<<<<<< HEAD
+
         P_c(i) = ((Surface_Area(shape, W(i-1), length) * propDens * C * c_star) / (g * A_t))^(1/ (1 - n));
-=======
-        P_c(i) = ((Surface_Area(shape, W(i-1), length) * propDens * C * C_star) / (g * A_t))^(1/ (1 - n));
->>>>>>> f1acbf5a163720f207fc2fb64cddf40607110e9b
+
         %Thrust
         Thrust(i) = c_t * A_t * P_c(i); %N %c_t changes over time! this eqn doesn't apply %T=mdot*ve (this assumes ideal nozzle design)
         %Burn Rate
