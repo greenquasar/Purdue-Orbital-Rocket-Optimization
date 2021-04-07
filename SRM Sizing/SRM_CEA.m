@@ -11,6 +11,9 @@ addpath('X:\Documents\Purdue\Orbital\purdue-orbital-mission-design\LRE Sizing\CE
 CEA_RUN = true;
 CEA_SAVE_FILE = 'cea.mat';
 
+atmoPressurePSI = atmoPressure/6895;
+PcPSI = Pc/6895;
+
 % The CEA MATLAB code takes a MATLAB map (called a dictionary in Python or
 % hash in C) as input. The dictionary uses MATLAB character arrays as the
 % keys, and the value data type varies by which key is used. Details of
@@ -18,14 +21,16 @@ CEA_SAVE_FILE = 'cea.mat';
 % For example: inp('key') = value.
 inp = containers.Map;
 inp('type') = 'eq';                   % Sets the type of CEA calculation
-inp('p') = Pc;                        % Chamber pressure
-inp('p_unit') = 'pa';                % Chamber pressure units
+inp('p') = PcPSI;                        % Chamber pressure
+inp('p_unit') = 'psi';                % Chamber pressure units
 inp('o/f') = OF;                      % Mixture ratio
 %inp('sup') = 70;                    % Supersonic area ratios
 %atmoPressure = 1.45;         %atmospheric pressure at altitude where engine is running psi 
 %14.7 psi is standard 
 %1.45 is 18km
-inp('pip') = Pc/atmoPressure;           % Pressure ratios
+atmoPressurePSI = atmoPressure/6895;
+PcPSI = Pc/6895;
+inp('pip') = PcPSI/atmoPressurePSI;           % Pressure ratios
 inp('fuel') = fuel;               % Fuel name from thermo.inp
 inp('fuel_t') = f_t;               % Fuel inlet temperature
 inp('ox') = oxidizer;                  % Ox name from thermo.inp (O2(L))

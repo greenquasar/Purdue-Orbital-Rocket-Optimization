@@ -17,8 +17,13 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     C = 6.2/1000; %C at pressure of 1000 psi (6.895 MPA)
     n = 0.098/1000; %Burn rate exponent at 1000 psi (6.895 MPA)
     propDens = 1500; %Average density for 70% AP-HTPB (kg/m^3) %maybe use rho from cea?
+    
+    C_t = [];
+    C_star = [];
    
     [c_t, c_star] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t, atmoPressure);
+    C_t = [C_t, c_t];
+    C_star = [C_star, c_star];
 
     if (width <= innerWidth)
        error("Width is less than or equal to inner width. Impossible!");
@@ -46,7 +51,9 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %time step
         T(i) = T(i-1) + dt;
         %if(we gon call it?)
-        [c_t, c_star] = SRM_CEA(P_c(i),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
+        [c_t, c_star] = SRM_CEA(P_c(i-1),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
+        C_t = [C_t, c_t];
+        C_star = [C_star, c_star];
         %end
         %Chamber pressure
         P_c = [P_c, 0];
