@@ -9,7 +9,20 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     %% Constants (SI)
     g = 9.80665; 
     %% Inputs
-    %time step [seconds]
+    %time step (s)
+    %shape: circular/square shape: "circular"/"square"
+    %length: chamber length (m)
+    %width: outer chamber width (m)
+    %innerWidth: inner chamber (m)
+    %maxPres: maximum chamber pressure desired (Pa)
+    %f_inert: inert mass fraction
+    %atmoPressure: atmospheric pressure (Pa)
+    %OF: oxygen to fuel ratio
+    %fuel: CEA fuel name
+    %f_t: fuel inlet temp (K)
+    %oxidizer: CEA oxidizer name
+    %o_t: oxygen inlet temp (K)
+    
     %rocket geometry parameters: Width, inner width, shape, and length [all in meters]
     %maximum pressure desired [Pa]
 
