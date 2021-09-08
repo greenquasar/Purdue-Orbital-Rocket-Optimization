@@ -27,9 +27,12 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     %maximum pressure desired [Pa]
 
     %GUESSTIMATED DUMMY VALUES FROM CEARUN, get better ones from CEA
-    C = 6.2/1000; %C at pressure of 1000 psi (6.895 MPA)
-    n = 0.098/1000; %Burn rate exponent at 1000 psi (6.895 MPA)
     propDens = 1500; %Average density for 70% AP-HTPB (kg/m^3) %maybe use rho from cea?
+    
+    %burn rate exponent, coefficient, wtf is goin on with these (?)
+    C = 6.2; %C at pressure of 1000 psi (6.895 MPA)
+    n = 0.098; %Burn rate exponent at 1000 psi (6.895 MPA)
+    
     
     C_t = [];
     C_star = [];
@@ -60,7 +63,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     M(1)=totalMass;
     i = 2;
     while W(i-1) < r_max
-        disp(string(W(i-1)/r_max)+'\n')
+        disp(string(W(i-1)/r_max))
         %time step
         T(i) = T(i-1) + dt;
         %if(we gon call it?)
@@ -76,7 +79,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %Thrust
         Thrust(i) = c_t * A_t * P_c(i); %N %c_t changes over time! this eqn doesn't apply %T=mdot*ve (this assumes ideal nozzle design)
         %Burn Rate
-        R_b(i) = C * P_c(i)^n;
+        R_b(i) = C * (P_c(i))^n;
         %New web distance
         W(i) = W(i-1) + R_b(i) * dt;
         
