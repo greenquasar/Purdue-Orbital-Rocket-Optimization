@@ -1,0 +1,8 @@
+prob rocket ions eq frozen
+    o/f = 3.1
+    p(psi) = 150
+reac
+    fuel = RP-1
+    oxid = H2O2(L),90%
+outp trans
+end

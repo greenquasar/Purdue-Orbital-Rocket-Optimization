@@ -1,0 +1,9 @@
+problem rocket eq
+    p(psi) = 219.2887
+    o/f = 6.6339
+    sup = 3.5689
+reac
+    fuel = Paraffin_Wax t(K) = 298.000
+    ox = HNO3(L) t(K) = 298.000
+outp trans
+end

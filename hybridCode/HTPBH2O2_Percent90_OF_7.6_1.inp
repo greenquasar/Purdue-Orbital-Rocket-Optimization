@@ -1,0 +1,10 @@
+problem rocket eq fr
+    p(bar) = 20
+    o/f = 7.6
+    pip = 20
+reac
+    fuel = HTPB t(K) = 298.000
+    ox = H2O2(L) t(K) = 298.000 wt% = 0.900
+    ox = H2O(L) t(K) = 298.000 wt% = 0.100
+outp trans
+end

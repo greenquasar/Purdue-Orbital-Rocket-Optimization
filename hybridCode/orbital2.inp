@@ -1,0 +1,8 @@
+problem rocket eq
+    p(psi) = 360, 370, 380, 390, 400
+    o/f = 6
+reac
+    fuel = Paraffin_Wax t(K) = 298.000
+    ox = HNO3(L) t(K) = 298.000
+outp trans
+end
