@@ -5,7 +5,7 @@
 %pressure to calc initial c_star
 
 %% solid rocket motor sizing code
-function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate(dt, shape, length, width, innerWidth, maxPres, f_inert, atmoPressure,OF,fuel,f_t,oxidizer,o_t)
+function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = SimulateLiquid(dt, shape, length, width, innerWidth, maxPres, f_inert, atmoPressure,OF,fuel,f_t,oxidizer,o_t)
     %% Constants (SI)
     g = 9.80665; 
     %% Inputs
