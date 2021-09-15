@@ -11,6 +11,7 @@ fclose('all');
 CEA_RUN = true;
 CEA_SAVE_FILE = 'cea.mat';
 
+% 1 Psi = 6894.7572932 Pa
 atmoPressurePSI = atmoPressure/6895;
 PcPSI = Pc/6895;
 
