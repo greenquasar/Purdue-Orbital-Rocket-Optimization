@@ -69,7 +69,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
 
         P_c(i) = ((Surface_Area(shape, W(i-1), length) * propDens * C * c_star) / (g * A_t))^(1/ (1 - n));
 
-        %Thrust (m/s)
+        %Thrust (N)
         Thrust(i) = c_t * A_t * P_c(i); %N %c_t changes over time! this eqn doesn't apply %T=mdot*ve (this assumes ideal nozzle design)
         %Burn Rate
         R_b(i) = C * P_c(i)^n;
