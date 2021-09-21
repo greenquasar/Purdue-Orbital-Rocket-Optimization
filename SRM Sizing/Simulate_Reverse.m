@@ -56,7 +56,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     M(1)=inertMass;
     i = 2;
     while W(i-1) > r_min
-        disp(string(W(i-1)/r_max)+'\n')
+        disp(string(W(i-1)/r_max))
         %time step
         T(i) = T(i-1) + dt;
         %if(we gon call it?)
