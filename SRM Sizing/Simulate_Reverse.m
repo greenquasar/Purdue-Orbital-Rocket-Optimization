@@ -48,7 +48,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     T(1) = 0;
     W(1) = r_max;
     P_c(1) = maxPres;
-    R_b(1) = C * P_c(1)^n;
+    R_b(1) = (C * (P_c(1) / (1 * 10^6)) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
     propVol = (Area(shape, r_max)-Area(shape, r_min))*length;
     propMass = propVol*propDens;
     totalMass = propMass/(1-f_inert);
@@ -72,7 +72,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %Thrust (N)
         Thrust(i) = c_t * A_t * P_c(i); %N %c_t changes over time! this eqn doesn't apply %T=mdot*ve (this assumes ideal nozzle design)
         %Burn Rate
-        R_b(i) = C * P_c(i)^n;
+        R_b(i) = (C * (P_c(i) / (1 * 10^6)) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
         %New web distance
         W(i) = W(i-1) - R_b(i) * dt;
         
