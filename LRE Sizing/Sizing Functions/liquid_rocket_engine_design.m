@@ -1,4 +1,6 @@
 function [out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
+%example input: fclose('all');[out] = liquid_rocket_engine_design(5000, 'RP-1', 298.150, 'O2(L)', 90.170,150, 150, 0.1, 5) 
+
 %% Liquid Propulsion System Design Code
 %% Header and Information
 % Author[s]: Ben Worrell
