@@ -2,14 +2,9 @@
 %%
 
 %% solid rocket motor sizing code
-function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(shape, length, width, innerWidth, maxPres, OF,fuel,oxidizer)
+function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(dt, shape, length, width, innerWidth, maxPres, f_inert, atmoPressure,OF,fuel,f_t,oxidizer,o_t)
     %% Constants (SI)
-    g = 9.80665;
-    f_inert = 0.1;
-    dt = 0.1;
-    atmoPressure = 10204.24;
-    f_t = 298;
-    o_t = 298;
+    g = 9.80665; 
     %% Inputs
     %time step (s)
     %shape: circular/square shape: "circular"/"square"
@@ -115,11 +110,11 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     plot(T,P_c);
     title('Chamber Pressure');
     subplot(2,3,5);
-    plot(T,Mdot);
+    plot(T,Thrust);
     title('Mass Flow');
     subplot(2,3,6);
-    plot(T,R_b);
-    title('Burn Rate');
+    plot(T,Thrust);
+    title('R');
 end
 
 function area = Surface_Area(shape, w, l)
