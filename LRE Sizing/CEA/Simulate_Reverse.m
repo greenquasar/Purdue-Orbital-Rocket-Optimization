@@ -36,11 +36,9 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     C_t = [];
     C_star = [];
    
-    %[c_t, c_star] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t, atmoPressure);
-    c_t = 10;
-    c_star = 0.5;
-    %C_t = [C_t, c_t];
-    %C_star = [C_star, c_star];
+    [c_t, c_star] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t, atmoPressure);
+    C_t = [C_t, c_t];
+    C_star = [C_star, c_star];
 
     if (width <= innerWidth)
        error("Width is less than or equal to inner width. Impossible!");
@@ -66,10 +64,10 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         disp(string(W(i-1)/r_max))
         %time step
         T(i) = T(i-1) - dt;
-        %if(we gon call it?)
-        %[c_t, c_star] = SRM_CEA(P_c(i-1),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
-        %C_t = [C_t, c_t];
-        %C_star = [C_star, c_star];
+        %CEA Call
+        [c_t, c_star] = SRM_CEA(P_c(i-1),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
+        C_t = [C_t, c_t];
+        C_star = [C_star, c_star];
         %end
         %Chamber pressure
         P_c = [P_c, 0];
