@@ -2,9 +2,14 @@
 %%
 
 %% solid rocket motor sizing code
-function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(dt, shape, length, width, innerWidth, maxPres, f_inert, atmoPressure,OF,fuel,f_t,oxidizer,o_t)
+function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(shape, length, width, innerWidth, maxPres, OF,fuel,oxidizer)
     %% Constants (SI)
-    g = 9.80665; 
+    g = 9.80665;
+    f_inert = 0.1;
+    dt = 1;
+    atmoPressure = 10204.24;
+    f_t = 298;
+    o_t = 298;
     %% Inputs
     %time step (s)
     %shape: circular/square shape: "circular"/"square"
@@ -31,11 +36,9 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     C_t = [];
     C_star = [];
    
-    %[c_t, c_star] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t, atmoPressure);
-    c_t = 10;
-    c_star = 0.5;
-    %C_t = [C_t, c_t];
-    %C_star = [C_star, c_star];
+    [c_t, c_star] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t,atmoPressure);
+    C_t = [C_t, c_t];
+    C_star = [C_star, c_star];
 
     if (width <= innerWidth)
        error("Width is less than or equal to inner width. Impossible!");
@@ -60,11 +63,11 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     while W(i-1) > r_min
         disp(string(W(i-1)/r_max))
         %time step
-        T(i) = T(i-1) - dt;
-        %if(we gon call it?)
-        %[c_t, c_star] = SRM_CEA(P_c(i-1),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
-        %C_t = [C_t, c_t];
-        %C_star = [C_star, c_star];
+        T(i) = T(i-1) + dt;
+        %CEA Call
+        [_t, c_star] = SRM_CEA(P_c(i-1),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
+        C_t = [C_t, c_t];
+        C_star = [C_star, c_star];
         %end
         %Chamber pressure
         P_c = [P_c, 0];
@@ -95,26 +98,25 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     
     %%Formatting
     %graphs
-    T = -T;
     figure(1);
     subplot(2,3,1);
-    plot(T,Thrust);
+    plot(-T,Thrust);
     title('Thrust');
     subplot(2,3,2);
-    plot(T,Mdot);
+    plot(-T,Mdot);
     title('Mass');
     subplot(2,3,3);
-    plot(T,W);
+    plot(-T,W);
     title('Web Distance');
     subplot(2,3,4);
-    plot(T,P_c);
+    plot(-T,P_c);
     title('Chamber Pressure');
     subplot(2,3,5);
-    plot(T,Thrust);
+    plot(-T,Mdot);
     title('Mass Flow');
     subplot(2,3,6);
-    plot(T,Thrust);
-    title('R');
+    plot(-T,R_b);
+    title('Burn Rate');
 end
 
 function area = Surface_Area(shape, w, l)
