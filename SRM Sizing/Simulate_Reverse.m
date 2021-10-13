@@ -41,9 +41,11 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
 
     r_max = width / 2;
     r_min = innerWidth / 2;
+    
     %finding throat area for end of burn
     A_t = ((Surface_Area(shape, r_max, length) * propDens * C * c_star) / (g * maxPres^(1-n)));
     throatDiameter = 2*sqrt(A_t/pi); %m
+    
     %set initial values
     T(1) = 0;
     W(1) = r_max;
@@ -54,6 +56,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     totalMass = propMass/(1-f_inert);
     inertMass = totalMass-propMass;
     M(1)=inertMass;
+    %Thrust(1) = Need initialization
     i = 2;
     while W(i-1) > r_min
         disp(string(W(i-1)/r_max))
@@ -67,10 +70,10 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %Chamber pressure
         P_c = [P_c, 0];
 
-        P_c(i) = ((Surface_Area(shape, W(i-1), length) * propDens * C * c_star) / (g * A_t))^(1/ (1 - n));
+        P_c(i) = ((Surface_Area(shape, W(i-1), length) * propDens * C * c_star) / (g * A_t)) ^ (1/ (1 - n));
 
         %Thrust (N)
-        Thrust(i) = c_t * A_t * P_c(i); %N %c_t changes over time! this eqn doesn't apply %T=mdot*ve (this assumes ideal nozzle design)
+        Thrust(i) = c_t * A_t * P_c(i); %c_t changes over time! this eqn doesn't apply %T=mdot*ve (this assumes ideal nozzle design)
         %Burn Rate
         R_b(i) = (C * (P_c(i) / (1 * 10^6)) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
         %New web distance
@@ -80,6 +83,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %calculate propellant volume
         Mdot(i) = (Area(shape, W(i)) + Area(shape, W(i-1)))*length*propDens;
         M(i) = M(i-1) + Mdot(i);
+        
         %increment index
         i = i + 1;
     end
@@ -125,4 +129,24 @@ function area = Area(shape, w)
             fprintf("Invalid shape parameter, see Surface_Area function for valid choices");
             area = 0;
     end
+end
+
+function [exceedMax, thrust_weight_ratio] = isExceededMax(thrust_max, thrust, weight)
+    
+    %initialize boolean variable
+    exceedMax = true;
+    
+    %Begin of for loop
+    for i = 1:length(thrust)
+        
+        %Create array of Thrust-Weight ratio
+        thrust_weight_ratio(i) = thrust(i) / weight(i);
+        
+        % Determine if thrust exceed the maximum threshold
+        if thrust(i) >= thrust_max
+            exceedMax = false;
+        end
+        
+    end %End of for loop
+
 end
