@@ -1,2 +1,5 @@
 *.inp
 *.out
+!thermo.inp
+!thermo_spg.inp
+!trans.inp
