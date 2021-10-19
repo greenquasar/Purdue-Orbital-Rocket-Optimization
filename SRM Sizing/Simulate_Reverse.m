@@ -2,9 +2,14 @@
 %%
 
 %% solid rocket motor sizing code
-function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(dt, shape, length, width, innerWidth, maxPres, f_inert, atmoPressure,OF,fuel,f_t,oxidizer,o_t)
+function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(shape, length, width, innerWidth, maxPres, OF,fuel,oxidizer)
     %% Constants (SI)
-    g = 9.80665; 
+    g = 9.80665;
+    f_inert = 0.1;
+    dt = 1;
+    atmoPressure = 10204.24;
+    f_t = 298;
+    o_t = 298;
     %% Inputs
     %time step (s)
     %shape: circular/square shape: "circular"/"square"
@@ -24,28 +29,24 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     %maximum pressure desired [Pa]
 
     %GUESSTIMATED DUMMY VALUES FROM CEARUN, get better ones from CEA
-    C = 6.2/1000; %C at pressure of 1000 psi (6.895 MPA)
-    n = 0.098/1000; %Burn rate exponent at 1000 psi (6.895 MPA)
+    C = 6.2; %C at pressure of 1000 psi (6.895 MPA)
+    n = 0.098; %Burn rate exponent at 1000 psi (6.895 MPA)
     propDens = 1500; %Average density for 70% AP-HTPB (kg/m^3) %maybe use rho from cea?
     
     C_t = [];
     C_star = [];
    
-    [c_t, c_star] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t, atmoPressure);
-    C_t = [C_t, c_t];
-    C_star = [C_star, c_star];
-
+    [C_t(1), C_star(1)] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t,atmoPressure);
+    
     if (width <= innerWidth)
        error("Width is less than or equal to inner width. Impossible!");
     end
 
     r_max = width / 2;
     r_min = innerWidth / 2;
-    
     %finding throat area for end of burn
-    A_t = ((Surface_Area(shape, r_max, length) * propDens * C * c_star) / (g * maxPres^(1-n)));
+    A_t = ((Surface_Area(shape, r_max, length) * propDens * C * C_star(1)) / (g * maxPres^(1-n)));
     throatDiameter = 2*sqrt(A_t/pi); %m
-    
     %set initial values
     T(1) = 0;
     W(1) = r_max;
@@ -56,24 +57,23 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     totalMass = propMass/(1-f_inert);
     inertMass = totalMass-propMass;
     M(1)=inertMass;
-    %Thrust(1) = Need initialization
     i = 2;
     while W(i-1) > r_min
         disp(string(W(i-1)/r_max))
         %time step
         T(i) = T(i-1) + dt;
-        %if(we gon call it?)
-        [c_t, c_star] = SRM_CEA(P_c(i-1),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
-        C_t = [C_t, c_t];
-        C_star = [C_star, c_star];
+        %CEA Call
+        [C_t(i), C_star(i)] = SRM_CEA(P_c(i-1),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
+        %C_t = [C_t, c_t];
+        %C_star = [C_star, c_star];
         %end
         %Chamber pressure
         P_c = [P_c, 0];
 
-        P_c(i) = ((Surface_Area(shape, W(i-1), length) * propDens * C * c_star) / (g * A_t)) ^ (1/ (1 - n));
+        P_c(i) = ((Surface_Area(shape, W(i-1), length) * propDens * C * C_star(i)) / (g * A_t))^(1/ (1 - n));
 
         %Thrust (N)
-        Thrust(i) = c_t * A_t * P_c(i); %c_t changes over time! this eqn doesn't apply %T=mdot*ve (this assumes ideal nozzle design)
+        Thrust(i) = C_t(i) * A_t * P_c(i); %N %c_t changes over time! this eqn doesn't apply %T=mdot*ve (this assumes ideal nozzle design)
         %Burn Rate
         R_b(i) = (C * (P_c(i) / (1 * 10^6)) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
         %New web distance
@@ -83,7 +83,6 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %calculate propellant volume
         Mdot(i) = (Area(shape, W(i)) + Area(shape, W(i-1)))*length*propDens;
         M(i) = M(i-1) + Mdot(i);
-        
         %increment index
         i = i + 1;
     end
@@ -94,6 +93,34 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     v_e = 2000;
     deltaVcheck = v_e*log(M(1)-M(end)); %need v_e
     specificImpulse = trapz(dt,Thrust)/(propMass*g);
+    
+    %%Formatting
+    %graphs
+    figure(1);
+    subplot(2,4,1);
+    plot(-T,Thrust);
+    title('Thrust');
+    subplot(2,4,2);
+    plot(-T,Mdot);
+    title('Mass');
+    subplot(2,4,3);
+    plot(-T,W);
+    title('Web Distance');
+    subplot(2,4,4);
+    plot(-T,P_c);
+    title('Chamber Pressure');
+    subplot(2,4,5);
+    plot(-T,Mdot);
+    title('Mass Flow');
+    subplot(2,4,6);
+    plot(-T,R_b);
+    title('Burn Rate');
+    subplot(2,4,7);
+    plot(-T,C_star);
+    title('C Star');
+    subplot(2,4,8);
+    plot(-T,C_t);
+    title('Thrust Coefficient');
 end
 
 function area = Surface_Area(shape, w, l)
@@ -129,24 +156,4 @@ function area = Area(shape, w)
             fprintf("Invalid shape parameter, see Surface_Area function for valid choices");
             area = 0;
     end
-end
-
-function [exceedMax, thrust_weight_ratio] = isExceededMax(thrust_max, thrust, weight)
-    
-    %initialize boolean variable
-    exceedMax = true;
-    
-    %Begin of for loop
-    for i = 1:length(thrust)
-        
-        %Create array of Thrust-Weight ratio
-        thrust_weight_ratio(i) = thrust(i) / weight(i);
-        
-        % Determine if thrust exceed the maximum threshold
-        if thrust(i) >= thrust_max
-            exceedMax = false;
-        end
-        
-    end %End of for loop
-
 end
