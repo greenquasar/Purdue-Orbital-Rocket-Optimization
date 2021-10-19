@@ -89,8 +89,8 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     end
     burn_time = T(end);
     accel = Thrust(2:end)./M(2:end);
-    %deltaV = trapz(dt, Thrust(2:end)./M(2:end));
-    deltaV = trapz(dt, Thrust(2:end)) / trapz(dt, M(2:end));
+    deltaV = trapz(dt, Thrust(2:end)./M(2:end));
+    deltaV - 
     
     v_e = 2000;
     deltaVcheck = v_e*log(M(1)-M(end)); %need v_e
