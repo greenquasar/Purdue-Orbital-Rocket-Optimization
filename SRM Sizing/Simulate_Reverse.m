@@ -4,6 +4,7 @@
 %% solid rocket motor sizing code
 function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(shape, length, width, innerWidth, maxPres, OF,fuel,oxidizer)
     %% Constants (SI)
+    clc;
     g = 9.80665;
     f_inert = 0.1;
     dt = 1;
@@ -81,14 +82,15 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         
         
         %calculate propellant volume
-        Mdot(i) = (Area(shape, W(i)) + Area(shape, W(i-1)))*length*propDens;
+        Mdot(i) = (Area(shape, W(i-1)) - Area(shape, W(i)))*length*propDens;
         M(i) = M(i-1) + Mdot(i);
         %increment index
         i = i + 1;
     end
     burn_time = T(end);
     accel = Thrust(2:end)./M(2:end);
-    deltaV = trapz(dt, Thrust(2:end)./M(2:end));
+    %deltaV = trapz(dt, Thrust(2:end)./M(2:end));
+    deltaV = trapz(dt, Thrust(2:end)) / trapz(dt, M(2:end));
     
     v_e = 2000;
     deltaVcheck = v_e*log(M(1)-M(end)); %need v_e
@@ -101,7 +103,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     plot(-T,Thrust);
     title('Thrust');
     subplot(2,4,2);
-    plot(-T,Mdot);
+    plot(-T,M);
     title('Mass');
     subplot(2,4,3);
     plot(-T,W);
