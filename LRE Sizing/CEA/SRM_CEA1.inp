@@ -1,9 +1,0 @@
-problem rocket eq
-    p(psi) = 164.8227
-    o/f = 0.4285
-    pip = 111.3706
-reac
-    fuel = HTPB t(K) = 298.000
-    ox = NH4CLO4(I) t(K) = 298.000
-outp trans
-end
