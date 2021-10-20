@@ -31,9 +31,9 @@ function [out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, 
 %% Liquid Propulsion System Design Code V2(metric units)
 %% Header and Information
 % Author[s]:Ben Worrell
-% Editor[s]: Michael Berthin, Alex Hanna
+% Editor[s]: Michael Berthin
 % Version 1
-% Creation Date: 10/13/2021
+% Creation Date: 10/06/2021
 % Differences from original: uses only metric units,
 % Revision Date
 % Purpose: Facilitates liquid rocket engine design based on given 
@@ -57,31 +57,29 @@ function [out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, 
 % 4. Oxidizer [string]: Oxidizer Selection
 % 5. Ox_Temp [float]: Oxidizer Storage Temperature [K]
 
-% 6. Chamber_Pressure [float]: Steady State, Average Chamber Pressure [Pa]
-% 7. Chamber_Diameter [float]: Chamber Diameter [m]
+% 6. Chamber_Pressure [float]: Steady State, Average Chamber Pressure [psi]
+% 7. Chamber_Diameter [float]: Chamber Diameter [in]
 % 8. OF1 [float]: Low initial guess for OF
 % 9. OF2 [float]: High initial guess for OF
 
 % IMPORTANT: For any storable propellants, CEA only accepts the temperature
 % 298.15 K, this input is for cyrogenic propellants
-
 %% Output[s]
 % Output is 1xn vector 'out' components of this vector discussed below
 % 1. O/F [float]: Optimized O/F ratio based on performance [N/A]
-% 2. cstar [float]: Characteristic velocity [currently ft/s - change to m/s]
+% 2. cstar [float]: Characteristic velocity [ft/s]
 % 3. Isp [float]: Specific impulse [s]
-% 4. m_dot_tot [float]: Total mass flow rate [currently lbm/s - change to kg*m/s]
-% 5. m_dot_fuel [float]: Fuel mass flow rate [currently lbm/s - change to kg*m/s]
-% 6. m_dot_ox [float]: Oxidizer mass flow rate [currently lbm/s - change to kg*m/s]
-% 7. Dt [float]: Throat diameter [currently in - change to m]
+% 4. m_dot_tot [float]: Total mass flow rate [lbm/s]
+% 5. m_dot_fuel [float]: Fuel mass flow rate [lbm/s]
+% 6. m_dot_ox [float]: Oxidizer mass flow rate [lbm/s]
+% 7. Dt [float]: Throat diameter [in]
 % 8. eps [float]: Expansion ratio [N/A]
-% 9. De [float]: Exit diameter [currently in - change to m]
-% 10. Dc [float]: Chamber Diameter [currently in - change to m]
-% 11. Lstar [float]: Chamber Characteristic Length [currently in - change to m]
-% 12. Lc [float]: Chamber Length [currently in - change to m]
-% 13. qc [float]: Heat flux in chamber [currently Btu/h-ft^2 - change to W/m^2]
-% 14. qt [float]: Heat flux at throat of nozzle [currently Btu/h-ft^2 - change to W/m^2]
-
+% 9. De [float]: Exit diameter [in]
+% 10. Dc [float]: Chamber Diameter [in]
+% 11. Lstar [float]: Chamber Characteristic Length [in]
+% 12. Lc [float]: Chamber Length [in]
+% 13. qc [float]: Heat flux in chamber [Btu/h-ft^2]
+% 14. qt [float]: Heat flux at throat of nozzle [Btu/f-ft^2]
 %% Add CEA to File Path
 % IMPORTANT: If you are using this on a computer for the first time,
 % you must download the CEA files and build the filepath for your own
@@ -108,14 +106,12 @@ savepath();
 
 %% Initializations
 g = 9.81; %acceleleration due to gravity [m/s^2]
-pc = Chamber_Pressure; %[Pa]
-% pc = pc / 6895; %[psi] passed to EngineCEA
+Pc = Chamber_Pressure; %[Pa]
+pc = Pc / 6895; %[psi] passed to EngineCEA
 Dc = Chamber_Diameter; %[m]
 
-%pe = 14.7; %exit pressure [psi]
-pe = 101325; % exit pressure [Pa]
-%pa = 14.7; %atmospheric pressure [psi]
-pa = 101325; % atmospheric pressure [Pa]
+pe = 14.7; %exit pressure [psi]
+pa = 14.7; %atmospheric pressure [psi]
 effcstar = 0.95; %c* efficiency [N/A]
 effcf = 0.9; %cf efficiency [N/A]
 
@@ -126,7 +122,7 @@ F = Thrust; %[N]
 OF = OF1:0.1:OF2; %vector of O/F 
 Ispvec = zeros(1,length(OF)); %vector of corresponding Isp
 for j = 1:length(OF)
-    [cstar, ~, Mach, gam, T, rho, mu, Pr, Mw, k] = EngineCEA(pc,OF(j),Fuel,Fuel_Temp,Oxidizer,Ox_Temp);
+    [cstar, ~, Mach, gam, T, rho, mu, Pr, Mw, k]= EngineCEA(pc,OF(j),Fuel,Fuel_Temp,Oxidizer,Ox_Temp);
     % Formatting
     % 1 -> Chamber Condition
     % 2 -> Throat Condition
@@ -136,7 +132,6 @@ for j = 1:length(OF)
     cstar = cstar / 3.281; %convert to [m/s]
     Ispvec(j) = (cf.*effcf.*cstar.*effcstar)./g; %[s]
 end
-
 OFopt = mean(OF(Ispvec == max(Ispvec))); %collects O/F that yields highest Isp
 OF = OFopt; %simplifies O/F argument
 %% Combustion Performance Analysis
@@ -151,8 +146,7 @@ m_dot_f = m_dot_tot*(1/(OF+1)); %steady fuel mass flow [kg/s]
 m_dot_ox = m_dot_f*OF; %steady oxidizer mass flow [kg/s]
 %% Engine Geometry Determination
 % Chamber
-%At = m_dot_tot*cstar*effcstar/(pc*6894.76); %throat area [m^2]
-At = m_dot_tot*cstar*effcstar/pc; %throat area [m^2]
+At = m_dot_tot*cstar*effcstar/(pc*6894.76); %throat area [m^2]
 Dt = sqrt(4*At/pi); %throat diameter [m]
 De = sqrt((Dt^2)*eps); %exit area [m^2]
 chi = Dc^2/Dt^2; %contraction ratio [N/A]
@@ -163,8 +157,7 @@ Lstar = 1.143; %characteristic length [m](45 in)
 Vc = Lstar*At; %chamber volume [m^3]
 Lc = Vc/((pi/4)*Dc^2); %chamber length [m]
 %% Nozzle Contour
-%[x,y] = nozzle(Dt*39.3701/2,eps,chi,Lc*39.3701); %plots nozzle contour [m] %39.3701 in/m
-[x,y] = nozzle(Dt/2,eps,chi,Lc); %plots nozzle contour [m]
+[x,y] = nozzle(Dt*39.3701/2,eps,chi,Lc*39.3701); %plots nozzle contour [m] %39.3701 in/m
 %% Thermal Analysis
 % Chamber
 q_c = heatflux(T(1),T,Mach(1),rho,mu,gam,k,Pr(1),Ru/Mw(1),Dc);
