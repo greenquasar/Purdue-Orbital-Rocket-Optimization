@@ -1,3 +1,4 @@
+%currently not being used for anything
 function [out] = liquid_rocket_engine_optimization(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, OF1, OF2, minChamberDiameter, maxChamberDiameter, stepSize)
     engines = [];
     for Chamber_Diameter = minChamberDiameter:stepSize:maxChamberDiameter
