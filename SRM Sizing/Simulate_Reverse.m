@@ -3,15 +3,20 @@
 
 %% solid rocket motor sizing code
 function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(shape, length, width, innerWidth, maxPres, OF,fuel,oxidizer)
+    %% Sample Function call
+    % [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse('circular', 2, 0.25, 0.125, 6895000, 0.4285, 'HTPB', 'NH4CLO4(I)');
+    
     %% Constants (SI)
     clc;
-    g = 9.80665;
-    f_inert = 0.1;
-    dt = 1;
-    atmoPressure = 10204.24;
-    f_t = 298;
-    o_t = 298;
+    g = 9.80665;    %[m/s^2]
+    f_inert = 0.1;  %[unitless fraction]
+    dt = 1;         %[sec]
+    atmoPressure = 5474.9; % Pressure at 20 km[Pa]
+    f_t = 298;      %[K]
+    o_t = 298;      %[K]
+    
     %% Inputs
+    
     %time step (s)
     %shape: circular/square shape: "circular"/"square"
     %length: chamber length (m)
@@ -36,19 +41,22 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     
     C_t = [];
     C_star = [];
+    Isp = [];
    
-    [C_t(1), C_star(1)] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t,atmoPressure);
+    [C_t(1), C_star(1), Isp(1)] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t,atmoPressure);
     
     if (width <= innerWidth)
        error("Width is less than or equal to inner width. Impossible!");
     end
 
-    r_max = width / 2;
-    r_min = innerWidth / 2;
-    %finding throat area for end of burn
-    A_t = ((Surface_Area(shape, r_max, length) * propDens * C * C_star(1)) / (g * maxPres^(1-n)));
-    throatDiameter = 2*sqrt(A_t/pi); %m
-    %set initial values
+    r_max = width / 2;  %[m]
+    r_min = innerWidth / 2; %[m]
+    
+    %Finding throat area for end of burn
+    A_t = ((Surface_Area(shape, r_max, length) * propDens * C * C_star(1)) / (g * maxPres^(1-n)));  %[m]
+    throatDiameter = 2*sqrt(A_t/pi);    %[m]
+    
+    %Set initial values
     T(1) = 0;
     W(1) = r_max;
     P_c(1) = maxPres;
@@ -64,7 +72,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %time step
         T(i) = T(i-1) + dt;
         %CEA Call
-        [C_t(i), C_star(i)] = SRM_CEA(P_c(i-1),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
+        [C_t(i), C_star(i), Isp(i)] = SRM_CEA(P_c(i-1),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
         %C_t = [C_t, c_t];
         %C_star = [C_star, c_star];
         %end
@@ -80,21 +88,29 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %New web distance
         W(i) = W(i-1) - R_b(i) * dt;
         
-        
+       
         %calculate propellant volume
         Mdot(i) = (Area(shape, W(i-1)) - Area(shape, W(i)))*length*propDens;
         M(i) = M(i-1) + Mdot(i);
         %increment index
         i = i + 1;
     end
+    
     burn_time = T(end);
     accel = Thrust(2:end)./M(2:end);
-    %deltaV = trapz(dt, Thrust(2:end)./M(2:end));
-    deltaV = trapz(dt, Thrust(2:end)) / trapz(dt, M(2:end));
     
-    v_e = 2000;
-    deltaVcheck = v_e*log(M(1)-M(end)); %need v_e
-    specificImpulse = trapz(dt,Thrust)/(propMass*g);
+    % Specific Impusle (Isp) [sec]
+    Isp = Isp / g;  %Convert [m/sec] to [sec]
+    specificImpulse = sum(Isp, 'all')/max(size(Isp));   %max(size(X)) is the same as length(X)
+    %%%% Old code (using Riemman Sum): 
+    %specificImpulse = trapz(dt,Thrust)/(propMass*g);
+    
+    % Delta-V [m/s]
+    v_e = specificImpulse * g;  %effective exhaust velocity
+    deltaV = v_e * log(M(end) / M(1));
+    %%%% Old code (using Riemman Sum):
+    %deltaV = trapz(dt, Thrust(2:end)./M(2:end));
+    %deltaV = trapz(dt, Thrust(2:end)) / trapz(dt, M(2:end));
     
     %%Formatting
     %graphs
@@ -102,27 +118,42 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     subplot(2,4,1);
     plot(-T,Thrust);
     title('Thrust');
+    grid on;
+    
     subplot(2,4,2);
     plot(-T,M);
     title('Mass');
+    grid on;
+    
     subplot(2,4,3);
     plot(-T,W);
     title('Web Distance');
+    grid on;
+    
     subplot(2,4,4);
     plot(-T,P_c);
     title('Chamber Pressure');
+    grid on;
+    
     subplot(2,4,5);
     plot(-T,Mdot);
     title('Mass Flow');
+    grid on;
+    
     subplot(2,4,6);
     plot(-T,R_b);
     title('Burn Rate');
+    grid on;
+    
     subplot(2,4,7);
     plot(-T,C_star);
     title('C Star');
+    grid on;
+    
     subplot(2,4,8);
     plot(-T,C_t);
     title('Thrust Coefficient');
+    grid on;
 end
 
 function area = Surface_Area(shape, w, l)
