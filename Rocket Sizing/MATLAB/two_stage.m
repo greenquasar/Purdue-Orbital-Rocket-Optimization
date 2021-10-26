@@ -5,27 +5,35 @@
 
 %Calculate rocket sizing (mass and dimensions) for given inputs
 %two stage version
-
+function [out] = two_stage(isp1, isp2, propMassFraction1, propMassFraction2, payloadMass, deltaVtotal, deltaVsplit, finenessRatio, propDensity1, propDensity2, containerThickness, engine1Length, engine2Length, payloadLength)  
+% sample call -- [] = two_stage(276, 276, 0.8, 0.8, 1.25, 8000, 0.5, 10, 1252, 1252, 0.01, 0.5, 0.5, 0.5)
 clearvars;
+
+%%INPUTS
+% 1. isp1 (s)
+% 2. isp2 (s)
+% 3. propMassFraction1
+% 4. propMassFraction2
+% 5. payloadMass (kg)
+% 6. deltaVtotal (m/s)
+% 7. deltaVsplit
+% 8. finenessRatio
+% 9. propDensity1 (kg/m^3)
+% 10. propDensity2 (kg/m^3
+% 11. containerThickness (m)
+% 12. engine1Length (m)
+% 13. engine2Length (m)
+% 14. payloadLength (m)
+
+%%OUTPUTS
+% 1. totalMass = total rocket mass (kg)
+% 2. totalMass2 = second stage mass (kg)
+% 3. length = rocket length (m)
+% 4. diamter = rocket diamter (m)
+% 5. crossSectionalArea = cross sctional area (m^2)
+
 %%CONSTANTS
 g = 9.81; %[m/s^2]
-%%INPUTS
-isp1 = 276; %[s]
-isp2 = 276; %[s]
-propMassFraction1 = 0.8; %between 0 and 1
-propMassFraction2 = 0.8; %between 0 and 1
-payloadMass = 1.25; %[kg]
-deltaVtotal = 8000; %[m/s]for a single stage
-deltaVsplit = 0.5; %between 0 and 1 (1 is all first stage, 0 is all second stage)
-finenessRatio = 10; %[dimensionless] length/diameter
-%the density values are combined fuel and oxidizer weighted by o:f ratio
-propDensity1 = 1252; %[kg/m^3]
-propDensity2 = 1252; %[kg/m^3]
-%use below two to calculate full rocket length
-containerThickness = 0.01; %[m]
-engine1Length = 0.5; %[m]
-engine2Length = 0.5; %[m]
-payloadLength = 0.5; %[m]
 
 %%CALCULATIONS
 %mass calculations
@@ -53,8 +61,3 @@ crossSectionalArea = (1/4) * pi * (diameter^2); %[m^2]
 
 %%OUTPUTS
 out = [totalMass, totalMass2, length, diameter, crossSectionalArea];
-fprintf("Rocket mass: %.2f [kg]\n", totalMass);
-fprintf("Second stage mass: %.2f [kg]\n", totalMass2);
-fprintf("Rocket Length: %.2f [m]\n", length);
-fprintf("Rocket diameter: %.2f [m]\n", diameter);
-fprintf("Cross sectional area: %.2f [m^2]\n", crossSectionalArea);
