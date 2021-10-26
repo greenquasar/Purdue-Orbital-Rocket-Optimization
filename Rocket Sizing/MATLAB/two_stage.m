@@ -1,14 +1,15 @@
-%Purdue Orbital Fall 2020
-%Rocket Sizing Code
-%Adapted from python rocket-sizing code
-%Authors: Blake Lowe
-
-%Calculate rocket sizing (mass and dimensions) for given inputs
-%two stage version
 function [out] = two_stage(isp1, isp2, propMassFraction1, propMassFraction2, payloadMass, deltaVtotal, deltaVsplit, finenessRatio, propDensity1, propDensity2, containerThickness, engine1Length, engine2Length, payloadLength)  
 % sample call -- [] = two_stage(276, 276, 0.8, 0.8, 1.25, 8000, 0.5, 10, 1252, 1252, 0.01, 0.5, 0.5, 0.5)
 clearvars;
-
+%%DESCRIPTION
+% Calculate rocket sizing (mass and dimensions) for given inputs
+% Specific for two stage version
+% 
+% Purdue Orbital Fall 2020
+% Rocket Sizing Code
+% Adapted from python rocket-sizing code
+% Authors: Blake Lowe, Alex Hanna
+%
 %%INPUTS
 % 1. isp1 (s)
 % 2. isp2 (s)
@@ -24,7 +25,7 @@ clearvars;
 % 12. engine1Length (m)
 % 13. engine2Length (m)
 % 14. payloadLength (m)
-
+%
 %%OUTPUTS
 % 1. totalMass = total rocket mass (kg)
 % 2. totalMass2 = second stage mass (kg)
@@ -39,16 +40,19 @@ g = 9.81; %[m/s^2]
 %mass calculations
 deltaV1 = deltaVtotal*deltaVsplit;
 deltaV2 = deltaVtotal-deltaV1;
+
 %second stage
 massRatio2 = exp(deltaV2/(g*isp2));
 propMass2 = payloadMass * ((massRatio2 - 1) / (((1 - massRatio2) / propMassFraction2) + massRatio2)); %[kg]
 inertMass2 = (propMass2 / propMassFraction2) - propMass2; %[kg]
 totalMass2 = propMass2 + inertMass2 + payloadMass; %[kg]
+
 %first stage
 massRatio1 = exp(deltaV1/(g*isp1));
 propMass1 = totalMass2 * ((massRatio1 - 1) / (((1 - massRatio1) / propMassFraction1) + massRatio1)); %[kg]
 inertMass1 = (propMass1 / propMassFraction1) - propMass1; %[kg]
 totalMass = propMass1 + inertMass1 + totalMass2; %[kg]
+
 %dimensioning
 propVolume1 = propMass1 / propDensity1; %[m^3]
 propVolume2 = propMass2 / propDensity2; %[m^3]
@@ -59,5 +63,5 @@ diameter = propDiameter + 2 * containerThickness;
 length = propLength + engine1Length + engine2Length + payloadLength;
 crossSectionalArea = (1/4) * pi * (diameter^2); %[m^2]
 
-%%OUTPUTS
+%%Creates output array
 out = [totalMass, totalMass2, length, diameter, crossSectionalArea];
