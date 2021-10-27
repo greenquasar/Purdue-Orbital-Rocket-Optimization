@@ -8,6 +8,12 @@ fclose('all');
 % 3)output mass
 % 4) make Lstar function
 
+%% Provided Bounds
+% 1)dv = 2 km/s
+% 2)Pc = [1000 3000] psi
+% 3)fineness ratio 10
+
+
 % input values: (Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
 % provides [OF cstar Isp m_dot_total m_dot_fuel m_dot_ox Dt eps De Dc Lstar Lc q_c q_t]
 
