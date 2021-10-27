@@ -19,7 +19,7 @@ Fuel = 'RP-1'; %'RP-1'
 Fuel_Temp = 298.150; %[K] 298.150 for RP-1
 Oxidixer = 'O2(L)'; %'O2(L)'
 Ox_Temp = 90.170; %[K] 90.170 for O2(L)
-Chamber_Pressure = 150; %[Pa]
+Chamber_Pressure = 14000000; %[Pa]
 Chamber_Diameter = .5; %[m]
 OF1 = 0.1; %OF lower bound
 OF2 = 5; %OF upper bound
@@ -28,7 +28,7 @@ OF2 = 5; %OF upper bound
 
 %--------------------------------------
 function [out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
-%example input:[out] = liquid_rocket_engine_design(5000, 'RP-1', 298.150, 'O2(L)', 90.170,150, 0.5, 0.1, 5) 
+%example input:[out] = liquid_rocket_engine_design(5000, 'RP-1', 298.150, 'O2(L)', 90.170, 14000000, 0.5, 0.1, 5) 
 
 %% Liquid Propulsion System Design Code V2(metric units)
 %% Header and Information
