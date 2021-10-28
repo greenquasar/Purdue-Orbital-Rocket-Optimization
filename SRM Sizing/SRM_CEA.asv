@@ -1,4 +1,4 @@
-function [c_t, C_star, Isp] = SRM_CEA(Pc,OF,fuel,f_t,oxidizer,o_t, atmoPressure)
+function [c_t, C_star] = SRM_CEA(Pc,OF,fuel,f_t,oxidizer,o_t, atmoPressure)
 
 fclose('all');
 
@@ -54,7 +54,7 @@ c_t = c_t_vec(2);
 C_star_vec = squeeze(data_eq('cstar'));
 C_star = C_star_vec(2);
 isp_vec = squeeze(data_eq('isp'));
-Isp = isp_vec(2);
+Isp = isp_vec(3);
 
 
 %%%%%%%%%%%%%%% keys(data_eq) %THIS LISTS ALL OUTPUTS %%%%%%%%%%%%%%%%%%%%%
