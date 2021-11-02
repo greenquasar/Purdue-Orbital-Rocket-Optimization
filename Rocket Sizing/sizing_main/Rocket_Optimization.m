@@ -18,7 +18,7 @@ a = 0; % Indexing variable
 % Step 3 - Rocket Optimization
 while loopbroken == 0
     a = a + 1; % Indexing While Loop
-    temp(a) = rand(); % Call First Stage
+    liquid_mass, liquid_vol = liquid_sizing(isp, propMassFraction, payloadMass, deltaV, propDensity, containerThickness); % Call First Stage
     temp2(a) = rand(); % Call Second stage
     temp3(a) = temp(a) + temp2(a);
     if temp3(a) < 0.1
