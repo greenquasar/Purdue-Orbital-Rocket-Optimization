@@ -7,14 +7,13 @@ function out = solid_sizing(minTWR, maxTWR, maxPres, deltaV, diameterMin, diamet
     fuel = 'HTPB';
     oxidizer = 'NH4CLO4(I)';
     for diameter = diameterMin:dx:diameterMax
-        disp('dumb1');
+        disp(diameter);
         for length = lengthMin:dy:lengthMax
-            disp('dumb2');
+            disp(length);
             for web = webMin:dw:webMax
-                disp('dumb3');
+                disp(web);
                 if web < diameter
                     [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(shape, length, diameter, web, maxPres, OF, fuel, oxidizer);
-                    disp('dumbBoss');
                 end
             end
         end
