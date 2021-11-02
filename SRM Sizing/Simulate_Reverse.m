@@ -10,7 +10,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     clc;
     g = 9.80665;    %[m/s^2]
     f_inert = 0.1;  %[unitless fraction]
-    dt = 1;         %[sec]
+    dt = 10;         %[sec]
     atmoPressure = 5474.9; % Pressure at 20 km[Pa]
     f_t = 298;      %[K]
     o_t = 298;      %[K]
