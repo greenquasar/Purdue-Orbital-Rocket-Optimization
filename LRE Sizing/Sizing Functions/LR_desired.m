@@ -3,10 +3,11 @@ fclose('all');
 %% To Do
 % 1)Make it so that depending on what fuel and oxidizers are given, script
 % finds correct CEA Temp to pass through
-% 2)iterate through chamber diameter to get maximum thrust (to get desired
+% 2)make atmospheric pressure an input, can change depending on height achieved by 1st stage
+% 3)iterate through chamber diameter to get maximum thrust (to get desired
 % delta v
-% 3)output mass
-% 4) make Lstar function
+% 4)output mass
+% 5) make Lstar function
 
 %% Provided Bounds
 % 1)dv = 2 km/s
