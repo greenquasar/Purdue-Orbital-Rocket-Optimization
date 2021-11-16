@@ -3,6 +3,7 @@ fclose('all');
 %% To Do
 % 1)Make it so that depending on what fuel and oxidizers are given, script
 % finds correct CEA Temp to pass through
+%       - have list of fuels and oxidizers, if invalid fuels or oxidizer is inputted, stop program
 % 2)make atmospheric pressure an input, can change depending on height achieved by 1st stage
 % 3)iterate through chamber diameter to get maximum thrust (to get desired
 % delta v
