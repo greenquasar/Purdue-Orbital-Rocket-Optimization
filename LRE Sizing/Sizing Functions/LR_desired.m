@@ -13,6 +13,7 @@ fclose('all');
 % 1)dv = 2 km/s
 % 2)Pc = [1000 3000] psi
 % 3)fineness ratio 10
+% 4) diameter ~.5m (based off jaxa ss520)
 
 
 % input values: (Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
@@ -30,8 +31,6 @@ Chamber_Pressure = 14000000; %[Pa]
 Chamber_Diameter = .5; %[m]
 OF1 = 0.1; %OF lower bound
 OF2 = 5; %OF upper bound
-
-[out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2);
 
 %--------------------------------------
 function [out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
