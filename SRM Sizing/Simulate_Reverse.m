@@ -2,18 +2,13 @@
 %%
 
 %% solid rocket motor sizing code
-function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(shape, length, width, innerWidth, maxPres, OF,fuel,oxidizer)
+function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(dt, shape, length, width, innerWidth, maxPres, f_inert, atmoPressure, OF,fuel,f_t,oxidizer,o_t)
     %% Sample Function call
     % [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse('circular', 2, 0.25, 0.125, 6895000, 0.4285, 'HTPB', 'NH4CLO4(I)');
     
     %% Constants (SI)
     clc;
     g = 9.80665;    %[m/s^2]
-    f_inert = 0.1;  %[unitless fraction]
-    dt = 10;         %[sec]
-    atmoPressure = 5474.9; % Pressure at 20 km[Pa]
-    f_t = 298;      %[K]
-    o_t = 298;      %[K]
     
     %% Inputs
     
