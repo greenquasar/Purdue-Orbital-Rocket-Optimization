@@ -2,50 +2,71 @@
 %%
 
 %% solid rocket motor sizing code
-function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(dt, shape, length, width, innerWidth, maxPres, f_inert, atmoPressure, OF,fuel,f_t,oxidizer,o_t)
+function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = ...
+    Simulate_Reverse(dt, shape, length, width, innerWidth, maxPres, f_inert, atmoPressure, ...
+    OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens)
     %% Sample Function call
-    % [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse('circular', 2, 0.25, 0.125, 6895000, 0.4285, 'HTPB', 'NH4CLO4(I)');
-    
-    %% Constants (SI)
-    clc;
-    g = 9.80665;    %[m/s^2]
+    %    
     
     %% Inputs
     
-    %time step (s)
+    %dt: time step (s)
     %shape: circular/square shape: "circular"/"square"
     %length: chamber length (m)
     %width: outer chamber width (m)
     %innerWidth: inner chamber (m)
-    %maxPres: maximum chamber pressure desired (Pa)
+    %maxPres: maximum chamber pressure stage can withstand (Pa)
     %f_inert: inert mass fraction
     %atmoPressure: atmospheric pressure (Pa)
-    %OF: oxygen to fuel ratio
-    %fuel: CEA fuel name
+    %OF: oxidizer to fuel ratio
+    %fuel: CEA fuel name, string
     %f_t: fuel inlet temp (K)
-    %oxidizer: CEA oxidizer name
-    %o_t: oxygen inlet temp (K)
+    %f_dens: fuel density in solid state (kg/m^3)
+    %oxidizer: CEA oxidizer name, string
+    %o_t: oxidizer inlet temp (K)
+    %o_dens: fuel density in solid state (kg/m^3)
     
-    %rocket geometry parameters: Width, inner width, shape, and length [all in meters]
-    %maximum pressure desired [Pa]
+    
+    %% Outputs
+    %T, array of time steps (s)
+    %W, array of web distance (m)
+    %P_c, array of chamber pressure (Pa)
+    %Thrust, array of Thrust (N)
+    %R_b, array of burn rate ()
+    %burn_time, time to expend stage (s)
+    %M, array of mass (kg)
+    %Mdot, array of mass flow
+    %A_t, throat area required to meet max pressure constraint at end of burn(m^2)
+    %deltaV, delta V of stage (m/s)
+    %specificImpulse, average of Isp over burn (s)
+    %propMass, (kg)
+    %C_t, array of coefficient of thrust (1)
+    %C_star, array of chamber pressure (Pa)
+    
+    %% Program
+    
+    % Constants (SI)
+    clc;
+    g = 9.80665;    %[m/s^2]
 
     %GUESSTIMATED DUMMY VALUES FROM CEARUN, get better ones from CEA
     C = 6.2; %C at pressure of 1000 psi (6.895 MPA)
     n = 0.098; %Burn rate exponent at 1000 psi (6.895 MPA)
-    propDens = 1500; %Average density for 70% AP-HTPB (kg/m^3) %maybe use rho from cea?
-    
+
     C_t = [];
     C_star = [];
     Isp = [];
    
-    [C_t(1), C_star(1), Isp(1)] = SRM_CEA(maxPres,OF,fuel,f_t,oxidizer,o_t,atmoPressure);
+    [C_t(1), C_star(1), Isp(1)] = SRM_CEA(maxPres,OF,fuel,f_temp,oxidizer,o_temp,atmoPressure);
     
     if (width <= innerWidth)
        error("Width is less than or equal to inner width. Impossible!");
     end
-
+    
+    %convenience terms by manipulating inputs
     r_max = width / 2;  %[m]
     r_min = innerWidth / 2; %[m]
+    propDens = (OF * o_dens + f_dens) / (OF + 1); %density of combined propellant (kg/m^3)
     
     %Finding throat area for end of burn
     A_t = ((Surface_Area(shape, r_max, length) * propDens * C * C_star(1)) / (g * maxPres^(1-n)));  %[m]
@@ -67,7 +88,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %time step
         T(i) = T(i-1) + dt;
         %CEA Call
-        [C_t(i), C_star(i), Isp(i)] = SRM_CEA(P_c(i-1),OF,fuel,f_t,oxidizer,o_t, atmoPressure);
+        [C_t(i), C_star(i), Isp(i)] = SRM_CEA(P_c(i-1),OF,fuel,f_temp,oxidizer,o_temp, atmoPressure);
         %C_t = [C_t, c_t];
         %C_star = [C_star, c_star];
         %end

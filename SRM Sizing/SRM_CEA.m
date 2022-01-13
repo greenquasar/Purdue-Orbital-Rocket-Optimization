@@ -56,6 +56,8 @@ C_star = C_star_vec(2);
 isp_vec = squeeze(data_eq('isp'));
 Isp = isp_vec(2);
 
+%uncomment below to see list of all terms cea outputs
+%keys(data_eq)
 
 %%%%%%%%%%%%%%% keys(data_eq) %THIS LISTS ALL OUTPUTS %%%%%%%%%%%%%%%%%%%%%
 % Use keys(data_eq) or keys(data_fr) to see the contents of each map
