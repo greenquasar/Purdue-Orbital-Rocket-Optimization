@@ -10,17 +10,34 @@ function [mass, volume] = liquid_sizing(isp, propMassFraction, payloadMass, delt
     % Authors: Blake Lowe, Alex Hanna
     %
     %%INPUTS
-    % 1. isp [s]
-    % 2. propMassFraction [1], fraction of stage mass which is propellant
-    % varies from [0,1]
-    % 3. payloadMass [kg]
-    % 4. deltaV [m/s]
-    % 5. propDensity [kg/m^3], weighted average of oxidizer and fuel based
-    % on oxidizer:fuel ratio
+    % 1. Thrust (Newtons)
+    % 2. Fuel Type 
+    % 3. Fuel Temp (Kelvin)
+    % 4. Oxidizer Type
+    % 5. Oxidizer Temp (Kelvin)
+    % 6. Chamber Pressure (Pa)
+    % 7. Gravity
+    % 8. Atmospheric Pressure (Pa)
     %
+    %%Varying INPUTS
+    % 1. Chamber Diameter (Inner Diameter - Meters)
+    % 2. Oxidizer Fuel Ratio (low, high; no units)
+    % 3. Fineness Ratio (Length/Width)
     %%OUTPUTS
-    % 1. mass [kg], total mass including given payload
-    % 2. volume [m^3], propellant volume
+    % 1. OF - Oxidizer Fuel Ratio
+    % 2. cstar - Characteristic Temperature
+    % 3. isp - Impulse(seconds)
+    % 4. m_dot_total - change of total mass (kg/s)
+    % 5. m_dot_fuel - change of mass of fuel (kg/s)
+    % 6. m_dot_ox - change of mass of oxidizer (kg/s)
+    % 7. Dt - time step(s)
+    % 8. eps = expansion ratio (chamber pressure/atmospheric pressure)
+    % 9. De - exit diameter (inches)
+    % 10. Dc - chamber diameter (inches)
+    % 11. Lstar - chamber characteristic length (inches)
+    % 12. Lc - Chamber Length (inches)
+    % 13. qc - heat flux in chamber (Btu/h-ft^2)
+    % 14. qt - heat flux a throat of nozzle (Btu/f-t^2)
     
     %constants
     g = 9.81;
