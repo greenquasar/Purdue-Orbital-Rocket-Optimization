@@ -1,4 +1,4 @@
-function [c_t, C_star, Isp] = SRM_CEA(Pc,OF,fuel,f_t,oxidizer,o_t, atmoPressure)
+function [c_t, C_star, Isp] = SRM_CEA(Pc,OF,fuel,f_t,f_fracs,oxidizer,o_t,o_fracs,atmoPressure)
 
 fclose('all');
 
@@ -33,9 +33,12 @@ PcPSI = Pc/6895;
 inp('pip') = PcPSI/atmoPressurePSI;           % Pressure ratios
 inp('fuel') = fuel;               % Fuel name from thermo.inp
 inp('fuel_t') = f_t;               % Fuel inlet temperature
+inp('fuel_wt%') = f_fracs;         % Fuel mass fraction
 inp('ox') = oxidizer;                  % Ox name from thermo.inp (O2(L))
 inp('ox_t') = o_t;                  % Ox inlet temperature
+inp('ox_wt%') = o_fracs;            % Ox weight percentage
 inp('file_name') = 'SRM_CEA.inp';   % Input/output file name
+
 if CEA_RUN
     data = cea_rocket_run(inp);       % Call the CEA MATLAB code
     save(CEA_SAVE_FILE, 'data');

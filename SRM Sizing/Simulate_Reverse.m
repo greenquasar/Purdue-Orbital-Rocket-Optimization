@@ -1,24 +1,26 @@
 %% solid rocket motor simulation code
 function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = ...
-    Simulate_Reverse(dt, length, width, innerWidth, maxPres, shape, f_inert, payloadMass, atmoPressure, ...
-    OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens) 
+    Simulate_Reverse(dt, stage_length, stage_width, innerWidth, maxPres, shape, f_inert, payloadMass, atmoPressure, ...
+    OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs) 
     %% Inputs
     
     %dt: time step (s)
-    %length: chamber length (m)
-    %width: outer chamber width (m)
+    %stage_length: chamber length (m)
+    %stage_width: outer chamber width (m)
     %innerWidth: inner chamber (m)
     %maxPres: maximum chamber pressure stage can withstand (Pa)
     %shape: circular/square shape: "circular"/"square"
     %f_inert: inert mass fraction
     %atmoPressure: atmospheric pressure (Pa)
     %OF: oxidizer to fuel ratio
-    %fuel: CEA fuel name, string
-    %f_t: fuel inlet temp (K)
-    %f_dens: fuel density in solid state (kg/m^3)
-    %oxidizer: CEA oxidizer name, string
-    %o_t: oxidizer inlet temp (K)
-    %o_dens: fuel density in solid state (kg/m^3)
+    %fuels: CEA fuel names, string (can be a list must use double quotes)
+    %f_temps: fuel inlet temps (K) (same length as fuel)
+    %f_densities: fuel densities in solid state (kg/m^3) (same length as fuel)
+    %f_fracs: mass fractions for each fuel (same length as fuel, sum to 1)
+    %oxidizers: CEA oxidizer names, string (can be a list must use double quotes)
+    %o_temps: oxidizer inlet temps (K) (same length as oxidizer)
+    %o_densities: fuel densities in solid state (kg/m^3) (same length as oxidizer)
+    %o_fracs: mass fractions for each oxidizer (same length as oxidizer, sum to 1)
     
     
     %% Outputs
@@ -40,7 +42,6 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     %% Program
     
     % Constants (SI)
-    clc;
     g = 9.80665;    %[m/s^2]
 
     %GUESSTIMATED DUMMY VALUES FROM CEARUN, get better ones from CEA
@@ -51,27 +52,41 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     C_star = [];
     Isp = [];
    
-    [C_t(1), C_star(1), Isp(1)] = SRM_CEA(maxPres,OF,fuel,f_temp,oxidizer,o_temp,atmoPressure);
+    [C_t(1), C_star(1), Isp(1)] = SRM_CEA(maxPres,OF,fuels,f_temps,f_fracs,oxidizers,o_temps,o_fracs,atmoPressure);
     
-    if (width <= innerWidth)
+    %error checking
+    if (stage_width <= innerWidth)
        error("Width is less than or equal to inner width. Impossible!");
     end
+    %todo if fuel and ox lists aren't the same length
     
     %convenience terms by manipulating inputs
-    r_max = width / 2;  %[m]
+    r_max = stage_width / 2;  %[m]
     r_min = innerWidth / 2; %[m]
+    
+    f_dens = 0;
+    for i = 1:length(fuels)
+        f_dens = f_dens + f_densities(i) * f_fracs(i);
+    end
+    o_dens = 0;
+    for i = 1:length(fuels)
+        o_dens = o_dens + o_densities(i) * o_fracs(i);
+    end
+        
     propDens = (OF * o_dens + f_dens) / (OF + 1); %density of combined propellant (kg/m^3)
     
     %Finding throat area for end of burn
-    A_t = ((Surface_Area(shape, r_max, length) * propDens * C * C_star(1)) / (g * maxPres^(1-n)));  %[m]
+    A_t = ((Surface_Area(shape, r_max, stage_length) * propDens * C * C_star(1)) / (g * maxPres^(1-n)));  %[m]
     throatDiameter = 2*sqrt(A_t/pi);    %[m]
+    
+    
     
     %Set initial values
     T(1) = 0;
     W(1) = r_max;
     P_c(1) = maxPres;
     R_b(1) = (C * (P_c(1) / (1 * 10^6)) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
-    propVol = (Area(shape, r_max)-Area(shape, r_min))*length;
+    propVol = (Area(shape, r_max)-Area(shape, r_min))*stage_length;
     propMass = propVol*propDens;
     totalMass = propMass/(1-f_inert) + payloadMass;
     inertMass = totalMass-propMass;
@@ -83,14 +98,14 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %time step
         T(i) = T(i-1) + dt;
         %CEA Call
-        [C_t(i), C_star(i), Isp(i)] = SRM_CEA(P_c(i-1),OF,fuel,f_temp,oxidizer,o_temp, atmoPressure);
+        [C_t(i), C_star(i), Isp(i)] = SRM_CEA(P_c(i-1),OF,fuels,f_temps,f_fracs,oxidizers,o_temps,o_fracs,atmoPressure);
         %C_t = [C_t, c_t];
         %C_star = [C_star, c_star];
         %end
         %Chamber pressure
         P_c = [P_c, 0];
 
-        P_c(i) = ((Surface_Area(shape, W(i-1), length) * propDens * C * C_star(i)) / (g * A_t))^(1/ (1 - n));
+        P_c(i) = ((Surface_Area(shape, W(i-1), stage_length) * propDens * C * C_star(i)) / (g * A_t))^(1/ (1 - n));
 
         %Thrust (N)
         Thrust(i) = C_t(i) * A_t * P_c(i);
@@ -100,7 +115,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         W(i) = W(i-1) - R_b(i) * dt;
        
         %calculate propellant volume
-        Mdot(i) = (Area(shape, W(i-1)) - Area(shape, W(i)))*length*propDens;
+        Mdot(i) = (Area(shape, W(i-1)) - Area(shape, W(i)))*stage_length*propDens;
         M(i) = M(i-1) + Mdot(i);
         %increment index
         i = i + 1;
