@@ -10,9 +10,10 @@ function [mass, volume] = liquid_sizing(isp, propMassFraction, payloadMass, delt
     % Authors: Blake Lowe, Alex Hanna
     %
     %%INPUTS
-    % 1. Thrust (Newtons)
+    % 1. Thrust (N)- tbd random value added for now, needs to be changed
+    % from lbf to N
     % 2. Fuel Type 
-    % 3. Fuel Temp (Kelvin)
+    % 3. Fuel Temp (Kelvin)- can be accessed from thermo.inp
     % 4. Oxidizer Type
     % 5. Oxidizer Temp (Kelvin)
     % 6. Chamber Pressure (Pa)
@@ -50,6 +51,20 @@ function [mass, volume] = liquid_sizing(isp, propMassFraction, payloadMass, delt
 
     %dimensioning
     propVolume = totalMass / propDensity; %[m^3]
+    
+    %thrust calculations
+    %delta v = 2km/s
+    %mass of rocket = total mass
+    %totmass*dv = totmass*accel = thrust
+    
+    
+    %main call loop
+    liquidOutput = liquid_rocket_engine_design(1000.0, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, 0, 1)
+    % OF1 is set to 0 and OF1 is set to 1 see liquid_rocket _engine_design
+    % for more info
+    % potential design: have an array containing all fuel types, storage
+    % temps, and other data related to fuel and cycle through it storing
+    % the results in another array.
     
     %outputs
     mass = totalMass;
