@@ -1,3 +1,2 @@
-Simulate:
-[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate(0.5, 'circular', 5, 0.5, 0.25, 1895000, 0.1, 10204.24, 0.4285, 'HTPB', 298, 'NH4CLO4(I)', 298);
-[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 'circular', 5, 0.5, 0.25, 1895000, 0.1, 10204.24, 0.4285, 'HTPB', 298, 'NH4CLO4(I)', 298);
+Simulate_Reverse:
+ [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 1, 0.5, 0.25, 1895000, 'circular', 0.1, 21.348, 10204.24, 0.4285, 'HTPB', 298, 920, 'NH4CLO4(I)', 298, 1950);
