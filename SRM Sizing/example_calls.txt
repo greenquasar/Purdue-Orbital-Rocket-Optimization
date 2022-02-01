@@ -3,7 +3,7 @@ HTPB+AP
 [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 1, 0.5, 0.25, 1895000, 'circular', 0.25, 21.348, 10204.24, 0.4285, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)"], [298], [1950], [1]);
 HTPB+AP+AL
 [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 1, 0.5, 0.25, 1895000, 'circular', 0.25, 21.348, 10204.24, 0.4285, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.9, 0.1]);
-Athena II First Stage 
-[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 9.02, 2.3368, 1.1684, 10200000, 'circular', 7.33, 0, 10204.24, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12]);
+Athena II First Stage (Castor 120)
+[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 9.02, 2.3368, 1.1684, 10200000, 'circular', 0.077, 0, 101325, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12]);
 AL as fuel
-[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 9.02, 2.3368, 1.1684, 10200000, 'circular', 7.33, 0, 10204.24, 2.22, ["HTPB","AL"], [298,200], [920,2710], [0.39,0.61], ["NH4CLO4(I)"], [298], [1950], [1]);
+[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 9.02, 2.3368, 1.1684, 10200000, 'circular', 0.25, 0, 101325, 2.22, ["HTPB","AL"], [298,200], [920,2710], [0.39,0.61], ["NH4CLO4(I)"], [298], [1950], [1]);
