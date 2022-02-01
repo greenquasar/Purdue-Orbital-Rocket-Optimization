@@ -41,8 +41,7 @@
     % 14. qt - heat flux a throat of nozzle (Btu/f-t^2)
     
     %Paths
-    addpath('C:\Documents\GitHub\Orbital\purdue-orbital-mission-design\LRE Sizing\Sizing Functions\', '-end');
-    savepath();
+    addpath('purdue-orbital-mission-design\LRE Sizing\CEA');
    
     
 
@@ -61,18 +60,30 @@
     %totmass*dv = totmass*accel = thrust
     
     %initializing variables
-    Thrust = 1000.0;
-    Fuel = 'e-';
-    Fuel_Temp = 298.150;
-    Oxidizer = 'O2-';
-    Ox_Temp = 298.150;
-    Chamber_Pressure = 1000;
-    Chamber_Diameter = 10;
+    Thrust = 1000.0; %constant
+    Fuel_Types = ['H'];
+    Fuel_Temps = [298.150];
+    Oxidizers = ['O2-'];
+    Ox_Temps = [298.150];
+    Chamber_Pressure = 1000; %constant*
+    dDiameter = .1;
+    Diameter_max = 10;
+    Diameter_min = .1;
     OF1 = 0;
     OF2 = 1;
     
     %main call loop
-    liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
+    for Oxidizer = Oxidizers
+        
+        for Fuel = Fuel_Types
+            
+            for Chamber_Diameter = Diameter_min:dDiameter:Diameter_max
+        
+                [OF, cstar, Isp, m_dot_total, m_dot_fuel, m_dot_ox, Dt, eps, De, Dc, Lstar, Lc, q_c, q_t] = liquid_rocket_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2);
+    
+            end
+        end
+    end
     % OF1 is set to 0 and OF2 is set to 1 see liquid_rocket _engine_design
     % for more info
     % potential design: have an array containing all fuel types, storage
