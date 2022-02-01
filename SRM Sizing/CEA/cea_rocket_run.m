@@ -178,8 +178,8 @@ for i = 1:length(ps)
     for j = 1:length(ofs)
         for k = 1:length(ratios)
             % Print out the current progress
-            fprintf('Running CEA call number %i of %i\n', m, ...
-                length(ps)*length(ofs)*length(ratios));
+%             fprintf('Running CEA call number %i of %i\n', m, ...
+%                 length(ps)*length(ofs)*length(ratios));
             
             % Set the subproblem inputs
             inp_cpy('p') = ps{i};
