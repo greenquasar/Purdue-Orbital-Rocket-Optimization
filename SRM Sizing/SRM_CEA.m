@@ -25,7 +25,6 @@ inp('p') = PcPSI;                        % Chamber pressure
 inp('p_unit') = 'psi';                % Chamber pressure units
 inp('o/f') = OF;                      % Mixture ratio
 %inp('sup') = 70;                    % Supersonic area ratios
-%atmoPressure = 1.45;         %atmospheric pressure at altitude where engine is running psi 
 %14.7 psi is standard 
 %1.45 is 18km
 atmoPressurePSI = atmoPressure/6895;
@@ -52,8 +51,17 @@ end
 % will only contain a single entry under data('fr').
 data_eq = data('eq');
 
-c_t_vec = squeeze(data_eq('cf'));
-c_t = c_t_vec(2);
+c_f_vec = squeeze(data_eq('cf')); %cf is coefficient of thrust at the exit pressure (not desired)
+c_f = c_f_vec(2);
+
+c_t = c_f; % wrong for now
+
+%look at line 84 of lre_design.m
+%set pa from atmo pressure, set pe as 
+%get Mach, gammas
+%calculate epsilon
+%calculate ct
+
 C_star_vec = squeeze(data_eq('cstar'));
 C_star = C_star_vec(2);
 isp_vec = squeeze(data_eq('isp'));
