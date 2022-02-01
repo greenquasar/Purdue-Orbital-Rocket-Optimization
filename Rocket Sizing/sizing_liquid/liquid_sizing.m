@@ -1,4 +1,4 @@
-function [mass, volume] = liquid_sizing(isp, propMassFraction, payloadMass, deltaV, propDensity)
+%function [mass, volume] = liquid_sizing(isp, propMassFraction, payloadMass, deltaV, propDensity)
     %example call: [mass, volume] = liquid_sizing(270, 0.9, 1, 1000, 1)
 
     %%DESCRIPTION
@@ -40,33 +40,46 @@ function [mass, volume] = liquid_sizing(isp, propMassFraction, payloadMass, delt
     % 13. qc - heat flux in chamber (Btu/h-ft^2)
     % 14. qt - heat flux a throat of nozzle (Btu/f-t^2)
     
-    %constants
-    g = 9.81;
+    %Paths
+    addpath('C:\Documents\GitHub\Orbital\purdue-orbital-mission-design\LRE Sizing\Sizing Functions\', '-end');
+    savepath();
+   
+    
 
     %mass calculations
-    massRatio = exp(deltaV/(g*isp)); %[dimensionless]
-    propMass = payloadMass * ((massRatio - 1) / (((1 - massRatio) / propMassFraction) + massRatio)); %[kg]
-    inertMass = (propMass / propMassFraction) - propMass; %[kg]
-    totalMass = propMass + inertMass + payloadMass; %[kg]
-
+    %massRatio = exp(deltaV/(g*isp)); %[dimensionless]
+    %propMass = payloadMass * ((massRatio - 1) / (((1 - massRatio) / propMassFraction) + massRatio)); %[kg]
+    %inertMass = (propMass / propMassFraction) - propMass; %[kg]
+    %totalMass = propMass + inertMass + payloadMass; %[kg]
+ 
     %dimensioning
-    propVolume = totalMass / propDensity; %[m^3]
-    
+    %propVolume = totalMass / propDensity; %[m^3]
+     
     %thrust calculations
     %delta v = 2km/s
     %mass of rocket = total mass
     %totmass*dv = totmass*accel = thrust
     
+    %initializing variables
+    Thrust = 1000.0;
+    Fuel = 'e-';
+    Fuel_Temp = 298.150;
+    Oxidizer = 'O2-';
+    Ox_Temp = 298.150;
+    Chamber_Pressure = 1000;
+    Chamber_Diameter = 10;
+    OF1 = 0;
+    OF2 = 1;
     
     %main call loop
-    liquidOutput = liquid_rocket_engine_design(1000.0, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, 0, 1)
-    % OF1 is set to 0 and OF1 is set to 1 see liquid_rocket _engine_design
+    liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
+    % OF1 is set to 0 and OF2 is set to 1 see liquid_rocket _engine_design
     % for more info
     % potential design: have an array containing all fuel types, storage
     % temps, and other data related to fuel and cycle through it storing
     % the results in another array.
     
     %outputs
-    mass = totalMass;
-    volume = propVolume;
-end
+    %mass = totalMass;
+    %volume = propVolume;
+%end

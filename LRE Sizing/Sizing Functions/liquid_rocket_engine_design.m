@@ -53,7 +53,7 @@ function [out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, 
 % IMPORTANT: If you are using this on a computer for the first time,
 % you must download the CEA files and build the filepath for your own
 % computer
-addpath('X:\Documents\Purdue\Orbital\purdue-orbital-mission-design\LRE Sizing\CEA', '-end');
+addpath('X:\Documents\GitHub\Orbital\purdue-orbital-mission-design\LRE Sizing\CEA', '-end');
 savepath();
 %% Initializations
 g = 9.81; %acceleleration due to gravity [m/s^2]
