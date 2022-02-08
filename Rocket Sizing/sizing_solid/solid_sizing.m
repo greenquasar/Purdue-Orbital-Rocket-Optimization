@@ -29,18 +29,34 @@
     % propMass = mass of propellant [kg]
     % C_t = Coefficient of Thrust [no units]
     % C_star = Characteristic Temperature [no units?] 
-    %
 
 
 function out = solid_sizing(minTWR, maxTWR, maxPres, deltaV, diameterMin, diameterMax, lengthMin, lengthMax, webMin, webMax, OF)
     addpath('../../SRM Sizing');
-    dx = 0.
+    %% Inputs
+    % TO BE EDITED----
+    dx = 0.1;
     1; %diameter step, m
     dy = 0.1; %length step, m
     dw = 0.1; %web step, m
     shape = 'circular';
     fuel = 'HTPB';
     oxidizer = 'NH4CLO4(I)';
+    
+    % Static Inputs
+    gravAccel = 9.81;
+    fsimass = 100; % temp; First Stage Inert Mass
+    atmpr = 100; % temp; Atmospheric Pressure
+    ftmp = 298; % Fuel Temp
+    otemp = 298; % Oxidizer Temp
+    tdelt = 10; %temp; Time Step (Time Delta)
+    
+    % Varying Inputs
+    sslen = [1]; % initialization, solid stage length
+    sswid = [1]; % initialiazation, solid stage width
+    ssid = [0.5]; % initialization, solid stage inner diameter
+    
+    %% Optimization Loop
     for diameter = diameterMin:dx:diameterMax
         disp(diameter);
         for length = lengthMin:dy:lengthMax

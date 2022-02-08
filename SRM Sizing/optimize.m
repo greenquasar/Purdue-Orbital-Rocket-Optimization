@@ -2,7 +2,7 @@
 function [length, width, inner_width, final_simulation] = ...
     optimize(dt, error_tolerance, deltaV, TWR, ...
     maxWidth, minWidth, maxPres, f_inert, shape, payloadMass, atmoPressure, ...
-    OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens)
+    OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens, diaU)
     %% Inputs
     %dt: time step (s)
     %error_tolerance: acceptable error in deltaV and TWR (%)
@@ -20,6 +20,7 @@ function [length, width, inner_width, final_simulation] = ...
     %oxidizer: CEA oxidizer name, string
     %o_t: oxidizer inlet temp (K)
     %o_dens: fuel density in solid state (kg/m^3)
+    %o_fracs: mass fractions for each oxidizer (same length as oxidizer, sum to 1)
     
     %% Outputs
     %length: length of stage (m)
@@ -27,16 +28,36 @@ function [length, width, inner_width, final_simulation] = ...
     %inner_width: inner width of stage (m)
     %final_simulation: Simulate_Reverse final output as a list
     %% Program
-    passthrough_args = [maxPres, f_inert, shape, payloadMass, atmoPressure, OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens]
+    passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens]
     
-    
-    max_iterations = 100;
+    max_iterations = 10;
     %deltaV should be controlled by length??
     %TWR should be conrolled by width and inner radius??
 
     %start with a guess for length and width
     %loop if iter less than max_iter
+    index = 0;
+    NewEntry = [0, 0, 0, 0, 0];
+    for dia = linspace(diaL, diaU, max_iterations)
+        inradU = (dia / 2) * 0.8;
+        inradL = 0.03 * (dia / 2);
+        for len = linspace(lenU,lenL, max_iterations)
+            for inrad = linspace(inradL, inradU, max_iterations)
+                index = index + 1;
+                [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(shape, len, dia, inrad, maxPres, OF, fuel, oxidizer);
+                NewEntry = [dia, len, inrad, M, deltaV];
+                LoopResults[index + 1] = NewEntry;
+            end
+        end
+    end
     
+    if (NewEntry(min(NewEntry[:, 4]), 5) >= 6)
+        mass = min(NewEntry[:, 4]);
+        deltaV = NewEntry(min(NewEntry[:, 4]), 5);
+        diameter = NewEntry(min(NewEntry[:, 4]), 1);
+        length = NewEntry(min(NewEntry[:, 4]), 2);
+        inrad = NewEntry(min(NewEntry[:, 4]), 3);
+    end
         %run simulate_reverse
 
         %check if deltaV is enough/too much
