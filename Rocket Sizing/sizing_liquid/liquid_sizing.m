@@ -41,7 +41,7 @@
     % 14. qt - heat flux a throat of nozzle (Btu/f-t^2)
     
     %Paths
-    addpath('purdue-orbital-mission-design\LRE Sizing\CEA');
+    %addpath('purdue-orbital-mission-design\LRE Sizing\CEA');
    
     
 
@@ -63,6 +63,11 @@
     Thrust = 1000.0; %constant
     Fuel_Types = ['H'];
     Fuel_Temps = [298.150];
+    
+    %David Tweak
+    Fuel_Temp = 298.150;
+    Ox_Temp = 298.150;
+    
     Oxidizers = ['O2-'];
     Ox_Temps = [298.150];
     Chamber_Pressure = 1000; %constant*
@@ -78,9 +83,9 @@
         for Fuel = Fuel_Types
             
             for Chamber_Diameter = Diameter_min:dDiameter:Diameter_max
-        
-                [OF, cstar, Isp, m_dot_total, m_dot_fuel, m_dot_ox, Dt, eps, De, Dc, Lstar, Lc, q_c, q_t] = liquid_rocket_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2);
-    
+                
+                [out] = liquid_rocket_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2);
+               
             end
         end
     end
