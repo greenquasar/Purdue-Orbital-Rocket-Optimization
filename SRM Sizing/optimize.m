@@ -1,8 +1,8 @@
 %% solid rocket motor sizing code
 function [length, width, inner_width, final_simulation] = ...
-    optimize(dt, error_tolerance, deltaV, TWR, ...
-    maxWidth, minWidth, maxPres, f_inert, shape, payloadMass, atmoPressure, ...
-    OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens, diaU)
+    optimize(dt, delta_V, TWR, ...
+    maxPres, shape, f_inert, payloadMass, atmoPressure, ...
+    OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs, diaU, lenU)
     %% Inputs
     %dt: time step (s)
     %error_tolerance: acceptable error in deltaV and TWR (%)
@@ -28,7 +28,7 @@ function [length, width, inner_width, final_simulation] = ...
     %inner_width: inner width of stage (m)
     %final_simulation: Simulate_Reverse final output as a list
     %% Program
-    passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens]
+    %passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens]
     
     max_iterations = 10;
     %deltaV should be controlled by length??
@@ -36,6 +36,8 @@ function [length, width, inner_width, final_simulation] = ...
 
     %start with a guess for length and width
     %loop if iter less than max_iter
+    diaL = 0.1 * diaU;
+    lenL = 0.1 * lenU;
     index = 0;
     NewEntry = [0, 0, 0, 0, 0];
     for dia = linspace(diaL, diaU, max_iterations)
@@ -44,26 +46,23 @@ function [length, width, inner_width, final_simulation] = ...
         for len = linspace(lenU,lenL, max_iterations)
             for inrad = linspace(inradL, inradU, max_iterations)
                 index = index + 1;
-                [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(shape, len, dia, inrad, maxPres, OF, fuel, oxidizer);
+                [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(dt, len, dia, inrad, maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs);
                 NewEntry = [dia, len, inrad, M, deltaV];
-                LoopResults[index + 1] = NewEntry;
+                LoopResults(index, :) = NewEntry;
             end
         end
     end
     
-    if (NewEntry(min(NewEntry[:, 4]), 5) >= 6)
-        mass = min(NewEntry[:, 4]);
-        deltaV = NewEntry(min(NewEntry[:, 4]), 5);
-        diameter = NewEntry(min(NewEntry[:, 4]), 1);
-        length = NewEntry(min(NewEntry[:, 4]), 2);
-        inrad = NewEntry(min(NewEntry[:, 4]), 3);
-    end
-        %run simulate_reverse
-
-        %check if deltaV is enough/too much
-
-        %check if min TWR is enough/too much
-        
-    %end loop
+    indexx = find(LoopResults(:,4) >= delta_V)
+    massWorking = min(LoopResults(:,4));
+    deltaVWorking = LoopResults(min(LoopResults(:,4)), 5);
+    diameterWorking = LoopResults(min(LoopResults(:,4)), 1);
+    lengthWorking = LoopResults(min(LoopResults(:,4)), 2);
+    inradWorking = LoopResults(min(LoopResults(:,4)), 3);
+    
+    mass = min(massWorking);
+    width = diameterWorking(mass == massWorking);
+    length = lengthWorking(mass == massWorking);
+    inner_width = inradWorking(mass == massWorking);
 
 end
