@@ -45,8 +45,9 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     g = 9.80665;    %[m/s^2]
 
     %GUESSTIMATED DUMMY VALUES FROM CEARUN, get better ones from CEA
-    C = 6.2; %C at pressure of 1000 psi (6.895 MPA)
-    n = 0.098; %Burn rate exponent at 1000 psi (6.895 MPA)
+
+    n = 0.098; %n is dimensionless
+    C = 6.2; %C has units of [m^(2n+1)N^(-n)] at pressure of 1000 psi (6.895 MPA)
 
     C_t = [];
     C_star = [];
@@ -76,7 +77,8 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     propDens = (OF * o_dens + f_dens) / (OF + 1); %density of combined propellant (kg/m^3)
     
     %Finding throat area for end of burn
-    A_t = ((Surface_Area(shape, r_max, stage_length) * propDens * C * C_star(1)) / (g * maxPres^(1-n)));  %[m]
+    % / 1000 is to make all constant terms in kg*s/mm, 1st 1-e6 is to make maxPres in Mpa, last 1e6 is to make At in m^2
+    A_t = ((Surface_Area(shape, r_max, stage_length) * propDens * C * C_star(1) / 1000) / (g * (maxPres*1e-6)^(1-n)))*1e-6;  %[m^2]
     throatDiameter = 2*sqrt(A_t/pi);    %[m]
     
     
@@ -88,7 +90,8 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     R_b(1) = (C * (P_c(1) / (1 * 10^6)) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
     propVol = (Area(shape, r_max)-Area(shape, r_min))*stage_length;
     propMass = propVol*propDens;
-    totalMass = propMass/(1-f_inert) + payloadMass;
+    f_prop = 1-f_inert;
+    totalMass = propMass/(f_prop) + payloadMass;
     inertMass = totalMass-propMass;
     M(1)=inertMass;
     i = 2;
@@ -104,13 +107,13 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         %end
         %Chamber pressure
         P_c = [P_c, 0];
-
-        P_c(i) = ((Surface_Area(shape, W(i-1), stage_length) * propDens * C * C_star(i)) / (g * A_t))^(1/ (1 - n));
+        % / 1000 is to make all constant terms in kg*s/mm, 1st 1e6 is to make At in mm^2, last 1e6 is to make P_c in Pa
+        P_c(i) = ((Surface_Area(shape, W(i-1), stage_length) * propDens * C * C_star(i) / 1000) / (g * A_t*1e6))^(1/ (1 - n))*1e6; %Pa
 
         %Thrust (N)
         Thrust(i) = C_t(i) * A_t * P_c(i);
         %Burn Rate
-        R_b(i) = (C * (P_c(i) / (1 * 10^6)) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
+        R_b(i) = (C * (P_c(i)*1e-6) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
         %New web distance
         W(i) = W(i-1) - R_b(i) * dt;
        
@@ -132,6 +135,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     
     % Delta-V [m/s]
     v_e = specificImpulse * g;  %effective exhaust velocity
+    %deltaV = v_e * log(M(end) / M(1));
     deltaV = v_e * log(M(end) / M(1));
     %%%% Old code (using Riemman Sum):
     %deltaV = trapz(dt, Thrust(2:end)./M(2:end));
