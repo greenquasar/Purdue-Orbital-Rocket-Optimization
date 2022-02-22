@@ -1,3 +1,5 @@
+%[length, width, inner_width, final_simulation] = optimize(5, 6, 1.5, 10200000, 'circular', 0.077, 0, 101325, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 2.5, 10)
+
 %% solid rocket motor sizing code
 function [length, width, inner_width, final_simulation] = ...
     optimize(dt, delta_V, TWR, ...
@@ -33,7 +35,7 @@ function [length, width, inner_width, final_simulation] = ...
     
     max_iterations = 10;
     %deltaV should be controlled by length??
-    %TWR should be conrolled by width and inner radius??
+    %TWR should be controlled by width and inner radius??
 
     %start with a guess for length and width
     %loop if iter less than max_iter
@@ -41,6 +43,7 @@ function [length, width, inner_width, final_simulation] = ...
     lenL = 0.1 * lenU;
     index = 0;
     NewEntry = [0, 0, 0, 0, 0];
+    LoopResults = zeros(5,5);
     for dia = linspace(diaL, diaU, max_iterations)
         inradU = (dia / 2) * 0.8;
         inradL = 0.03 * (dia / 2);
@@ -48,7 +51,7 @@ function [length, width, inner_width, final_simulation] = ...
             for inrad = linspace(inradL, inradU, max_iterations)
                 index = index + 1;
                 [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(dt, len, dia, inrad, maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs);
-                NewEntry = [dia, len, inrad, M, deltaV];
+                NewEntry = [dia, len, inrad, M(end), deltaV]
                 LoopResults(index, :) = NewEntry;
             end
         end
