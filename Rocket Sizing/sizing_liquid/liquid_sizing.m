@@ -61,18 +61,25 @@
     
     %initializing variables
     Thrust = 1000.0; %constant
-    Fuel_Types = ['H'];
-    Fuel_Temps = [298.150];
+     Fuel_Types = ['H','BH'];
+     Fuel_Temps = [298.150, 200];
+%     Fuels = cell(2,2); %defines empty matrix for fuels
+%     Fuels{1,1} = 'H'; %defines first fuel (hydrogen)
+%     Fuels{1,2} = 298.150; %defines first fuel temperature
+%     Fuels{2,1} = 'BH'; %defines second fuel (boron monohydride)
+%     Fuels{2,2} = 200; %defines second fuel temperature
+     
+    %define loop variable for fuels
+    i = 1;
     
     %David Tweak
-    Fuel_Temp = 298.150;
     Ox_Temp = 298.150;
     
     Oxidizers = ['O2-'];
     Ox_Temps = [298.150];
     Chamber_Pressure = 1000; %constant*
     dDiameter = .1;
-    Diameter_max = 10;
+    Diameter_max = 0.2;
     Diameter_min = .1;
     OF1 = 0;
     OF2 = 1;
@@ -81,12 +88,15 @@
     for Oxidizer = Oxidizers
         
         for Fuel = Fuel_Types
-            
+            Fuel_Temp = Fuel_Temps(i);
             for Chamber_Diameter = Diameter_min:dDiameter:Diameter_max
                 
                 [out] = liquid_rocket_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2);
                
             end
+            
+            i = i + 1;
+          
         end
     end
     % OF1 is set to 0 and OF2 is set to 1 see liquid_rocket _engine_design

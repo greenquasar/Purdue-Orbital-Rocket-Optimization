@@ -1,11 +1,50 @@
-function [out] = liquid_rocket_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
-%example input: fclose('all');[out] = liquid_rocket_engine_design(5000, 'RP-1', 298.150, 'O2(L)', 90.170,150, 150, 0.1, 5) 
+fclose('all');
 
-%% Liquid Propulsion System Design Code
+%% To Do
+% 1)Make it so that depending on what fuel and oxidizers are given, script
+% finds correct CEA Temp to pass through
+%       - have list of fuels and oxidizers, if invalid fuels or oxidizer is inputted, stop program
+% 2)make atmospheric pressure an input, can change depending on height achieved by 1st stage
+% 3)iterate through chamber diameter to get maximum thrust (to get desired
+% delta v
+% 4)output mass
+% 5) make Lstar function
+
+%% Provided Bounds
+% 1)dv = 2 km/s
+% 2)Pc = [1000 3000] psi
+% 3)fineness ratio 10
+% 4) diameter ~.5m (based off jaxa ss520)
+
+
+% input values: (Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
+% provides [OF cstar Isp m_dot_total m_dot_fuel m_dot_ox Dt eps De Dc Lstar Lc q_c q_t]
+
+% CEA call: [cstar, isp, M, gamma, T, rho, mu, Pr, Mw, k] = EngineCEA(Pc,OF,fuel,f_t,oxidizer,o_t)
+% CEA first call initializations
+
+Thrust = 5000; %[N]
+Fuel = 'RP-1'; %'RP-1'
+Fuel_Temp = 298.150; %[K] 298.150 for RP-1
+Oxidixer = 'O2(L)'; %'O2(L)'
+Ox_Temp = 90.170; %[K] 90.170 for O2(L)
+Chamber_Pressure = 14000000; %[Pa]
+Chamber_Diameter = .5; %[m]
+OF1 = 0.1; %OF lower bound
+OF2 = 5; %OF upper bound
+
+%--------------------------------------
+function [out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
+%example input:[out] = liquid_rocket_engine_design(5000, 'RP-1', 298.150, 'O2(L)', 90.170, 14000000, 0.5, 0.1, 5) 
+
+%% Liquid Propulsion System Design Code V2(metric units)
 %% Header and Information
-% Author[s]: Ben Worrell
-% Revision: 1
-% Revision Date: 4/11/2020
+% Author[s]:Ben Worrell
+% Editor[s]: Michael Berthin, Alex Hanna
+% Version 1
+% Last Update Date: 10/25/2021
+% Differences from original: uses only metric units,
+% Revision Date
 % Purpose: Facilitates liquid rocket engine design based on given 
 % thrust, propellant combination, steady state chamber pressure, and O/F
 % ratio. Assumes an optimally expanded 80% bell nozzle contour and analyzes
@@ -21,7 +60,7 @@ function [out] = liquid_rocket_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp
 %       American Institute of Aeronautics and Astronautics.
 %% Input[s]
 % Input Format: Name [data type]: description [unit]
-% 1. Thrust [float]: Desired Thrust Level
+% 1. Thrust [float]: Desired Thrust Level [N]
 % 2. Fuel [string]: Fuel Selection
 % 3. Fuel_Temp [float]: Fuel Storage Temperature [K]
 % 4. Oxidizer [string]: Oxidizer Selection
@@ -49,22 +88,45 @@ function [out] = liquid_rocket_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp
 % 12. Lc [float]: Chamber Length [in]
 % 13. qc [float]: Heat flux in chamber [Btu/h-ft^2]
 % 14. qt [float]: Heat flux at throat of nozzle [Btu/f-ft^2]
+
+
 %% Add CEA to File Path
-% IMPORTANT: If you are using this on a computer for the first time,
-% you must download the CEA files and build the filepath for your own
-% computer
-addpath('C:\Users\jdmas\OneDrive\Documents\GitHub\purdue-orbital-mission-design\LRE Sizing\CEA');
+% IMPORTANT: If you are using this on a computer for the first time, you must download the CEA files and build the filepath for your own computer
+fclose('all');
+addpath('X:\Documents\Purdue\Orbital\purdue-orbital-mission-design\LRE Sizing\CEA', '-end');
 savepath();
+
+
+%% Important Notes [this script]
+% 1) Deleted unit conversions to maintain SI units - reference original liquid design code for conversions
+
+%% Important Notes [EngineCEA]
+% 1) Modify atmoPressure to pressure at desired altitude
+% 2) EngineCEA outputs cstar in ft/s (internal conversion), convert it back
+% after initial EngineCEA call
+% 3) Chamber pressure passed to EngineCEA in psi
+% 4) Might want to make inp('fuel_t_unit') = 'K', not sure what default is
+% 5) Might want to make inp('ox_t_unit') = 'K', not sure what default is
+% 6) All outputs should be in SI units
+
+%% Important Notes [cea_rocket_run]
+% 1) Input pressure default bar (changed to psi in EngineCEA)
+% 2) cea_rocket_read says all properties in SI units (kg, m, s, K)
+
 %% Initializations
-g = 9.81; %acceleleration due to gravity [m/s^2]
-pc = Chamber_Pressure;
-Dc = Chamber_Diameter / 39.3701;
-pe = 14.7; %exit pressure [psi]
-pa = 14.7; %atmospheric pressure [psi]
-effcstar = 0.95; %c* efficiency [N/A]
-effcf = 0.9; %cf efficiency [N/A]
+g = 9.81; % acceleleration due to gravity [m/s^2]
+Pc = Chamber_Pressure; % [Pa]
+pc = Pc / 6895; % [psi] passed to EngineCEA
+Dc = Chamber_Diameter; % [m]
+
+pe = 14.7; % exit pressure [psi]
+pa = 14.7; % atmospheric pressure [psi]
+effcstar = 0.95; % c* efficiency [N/A]
+effcf = 0.9; % cf efficiency [N/A]
+
 Ru = 8314; % [J/kmol*K]
-F = Thrust*4.44822; %converts [lbf] to [N]
+F = Thrust; % [N]
+
 %% O/F Ratio Optimization
 % This will take a while (anywhere between 7 and 20 minutes)
 OF = OF1:0.1:OF2; %vector of O/F 
@@ -77,10 +139,12 @@ for j = 1:length(OF)
     % 3 -> Nozzle Condition
     epsilon = 1./Mach(3) .* ((2+(gam(3)-1).*Mach(3).^2)./(gam(3)+1)).^((gam(3)+1)./(2.*(gam(3)-1)));
     cf = sqrt(((2.*gam(3,1).^2)./(gam(3,1)-1)) .* (2./(gam(3,1)+1)).^((gam(3,1)+1)./(gam(3,1)-1)) .* (1-(pe/pc).^((gam(3)-1)./gam(3)))) + (pe/pc - pa/pc).*epsilon; % Dimensionless thrust
-    Ispvec(j) = (cf.*effcf.*cstar.*effcstar)./g;
+    cstar = cstar / 3.281; %convert to [m/s]
+    Ispvec(j) = (cf.*effcf.*cstar.*effcstar)./g; %[s]
 end
 OFopt = mean(OF(Ispvec == max(Ispvec))); %collects O/F that yields highest Isp
 OF = OFopt; %simplifies O/F argument
+
 %% Combustion Performance Analysis
 [~, ~, Mach, gam, T, rho, mu, Pr, Mw, k] = EngineCEA(pc,OF,Fuel,Fuel_Temp,Oxidizer,Ox_Temp);
 cstar = sqrt((Ru*T(1)/(gam(1)*Mw(1)))*((2/(gam(1)+1))^(-(gam(1)+1)/(gam(1)-1)))); %characteristic velocity [m/s]
@@ -91,39 +155,31 @@ ve = sqrt((2*gam(1)*Ru*T(1))/(Mw(1)*(gam(1)-1))*(1-(pe/pc)^((gam(1)-1)/gam(1))))
 m_dot_tot = F/ve; %steady total mass flow [kg/s]
 m_dot_f = m_dot_tot*(1/(OF+1)); %steady fuel mass flow [kg/s]
 m_dot_ox = m_dot_f*OF; %steady oxidizer mass flow [kg/s]
-%m_lost = m_dot_tot * Isp; %calculates mass of fuel and oxidizer lost [kg]
+
 %% Engine Geometry Determination
 % Chamber
 At = m_dot_tot*cstar*effcstar/(pc*6894.76); %throat area [m^2]
 Dt = sqrt(4*At/pi); %throat diameter [m]
 De = sqrt((Dt^2)*eps); %exit area [m^2]
 chi = Dc^2/Dt^2; %contraction ratio [N/A]
+
 Lstar = 1.143; %characteristic length [m](45 in)
+
 % Uncomment this line once getlstar.m function is fully built at this point
 % 45 in is a relatively good estimate for a lot of these propellants
 %Lstar = getlstar(Fuel, Oxidizer); %chamber characteristic length [m]
 Vc = Lstar*At; %chamber volume [m^3]
 Lc = Vc/((pi/4)*Dc^2); %chamber length [m]
+
 %% Nozzle Contour
 [x,y] = nozzle(Dt*39.3701/2,eps,chi,Lc*39.3701); %plots nozzle contour [m] %39.3701 in/m
+
 %% Thermal Analysis
 % Chamber
 q_c = heatflux(T(1),T,Mach(1),rho,mu,gam,k,Pr(1),Ru/Mw(1),Dc);
 % Throat
 q_t = heatflux(T(2),T,Mach(2),rho,mu,gam,k,Pr(2),Ru/Mw(2),Dt);
-%% Unit Conversions
-cstar = cstar * 3.28084; %converts [m/s] to [ft/s]
-m_dot_total = m_dot_tot * 2.2; %converts [kg/s] to [lbm/s]
-m_dot_fuel = m_dot_f * 2.2; %converts [kg/s] to [lbm/s]
-m_dot_ox = m_dot_ox * 2.2; %converts [kg/s] to [lbm/s]
-Dt = Dt * 39.3701; %converts [m] to [in]
-De = De * 39.3701; %converts [m] to [in]
-Dc = Dc * 39.3701; %converts [m] to [in]
-Lc = Lc * 39.3701; %converts [m] to [in]
-Lstar = Lstar * 39.3701; %converts [m] to [in]
-q_c = q_c * 0.316998; %converts [W/m^2] to [Btu/hr-ft^2]
-q_t = q_t * 0.316998; %converts [W/m^2] to [Btu/hr-ft^2]
-%m_lost = m_lost * 2.2 %converts [kg] to [lbm]
+
 %% Build Output Vector
 out = [OF cstar Isp m_dot_total m_dot_fuel m_dot_ox Dt eps De Dc Lstar Lc q_c q_t];
 end

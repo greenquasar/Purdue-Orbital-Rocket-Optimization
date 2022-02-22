@@ -1,5 +1,5 @@
 %% solid rocket motor simulation code
-function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = ...
+function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star] = ...
     Simulate_Reverse(dt, stage_length, stage_width, innerWidth, maxPres, shape, f_inert, payloadMass, atmoPressure, ...
     OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs) 
     %% Inputs
@@ -111,15 +111,18 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
         P_c(i) = ((Surface_Area(shape, W(i-1), stage_length) * propDens * C * C_star(i) / 1000) / (g * A_t*1e6))^(1/ (1 - n))*1e6; %Pa
 
         %Thrust (N)
-        Thrust(i) = C_t(i) * A_t * P_c(i);
+        %Thrust(i) = C_t(i) * A_t * P_c(i);
         %Burn Rate
         R_b(i) = (C * (P_c(i)*1e-6) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
         %New web distance
         W(i) = W(i-1) - R_b(i) * dt;
        
-        %calculate propellant volume
-        Mdot(i) = (Area(shape, W(i-1)) - Area(shape, W(i)))*stage_length*propDens;
-        M(i) = M(i-1) + Mdot(i);
+        %calculate propellant mass
+        %Mdot(i) = (Area(shape, W(i-1)) - Area(shape, W(i)))*stage_length*propDens;
+        Mdot(i) = Surface_Area(shape, W(i), stage_length)*R_b(i)*propDens;
+        M(i) = M(i-1) + Mdot(i)*dt;
+        Thrust(i) = Isp(i) * g * Mdot(i);
+        
         %increment index
         i = i + 1;
     end
@@ -128,14 +131,13 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpul
     accel = Thrust(2:end)./M(2:end);
     
     % Specific Impusle (Isp) [sec]
-    Isp = Isp / g;  %Convert [m/sec] to [sec]
-    specificImpulse = sum(Isp, 'all')/max(size(Isp));   %max(size(X)) is the same as length(X)
+    avgSpecificImpulse = sum(Isp, 'all')/max(size(Isp));   %max(size(X)) is the same as length(X)
     %%%% Old code (using Riemman Sum): 
     %specificImpulse = trapz(dt,Thrust)/(propMass*g);
     
     % Delta-V [m/s]
-    v_e = specificImpulse * g;  %effective exhaust velocity
-    %deltaV = v_e * log(M(end) / M(1));
+    v_e = avgSpecificImpulse * g;  %effective exhaust velocity
+
     deltaV = v_e * log(M(end) / M(1));
     %%%% Old code (using Riemman Sum):
     %deltaV = trapz(dt, Thrust(2:end)./M(2:end));

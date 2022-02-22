@@ -1,4 +1,4 @@
-function [out] = liquid_rocket_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
+function [out] = liquid_rocket_engine_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp, Chamber_Pressure, Chamber_Diameter, OF1, OF2)
 %example input: fclose('all');[out] = liquid_rocket_engine_design(5000, 'RP-1', 298.150, 'O2(L)', 90.170,150, 150, 0.1, 5) 
 
 %% Liquid Propulsion System Design Code
@@ -53,7 +53,7 @@ function [out] = liquid_rocket_design(Thrust, Fuel, Fuel_Temp, Oxidizer, Ox_Temp
 % IMPORTANT: If you are using this on a computer for the first time,
 % you must download the CEA files and build the filepath for your own
 % computer
-addpath('C:\Users\jdmas\OneDrive\Documents\GitHub\purdue-orbital-mission-design\LRE Sizing\CEA');
+addpath('X:\Documents\GitHub\Orbital\purdue-orbital-mission-design\LRE Sizing\CEA', '-end');
 savepath();
 %% Initializations
 g = 9.81; %acceleleration due to gravity [m/s^2]
@@ -91,7 +91,6 @@ ve = sqrt((2*gam(1)*Ru*T(1))/(Mw(1)*(gam(1)-1))*(1-(pe/pc)^((gam(1)-1)/gam(1))))
 m_dot_tot = F/ve; %steady total mass flow [kg/s]
 m_dot_f = m_dot_tot*(1/(OF+1)); %steady fuel mass flow [kg/s]
 m_dot_ox = m_dot_f*OF; %steady oxidizer mass flow [kg/s]
-%m_lost = m_dot_tot * Isp; %calculates mass of fuel and oxidizer lost [kg]
 %% Engine Geometry Determination
 % Chamber
 At = m_dot_tot*cstar*effcstar/(pc*6894.76); %throat area [m^2]
@@ -123,7 +122,6 @@ Lc = Lc * 39.3701; %converts [m] to [in]
 Lstar = Lstar * 39.3701; %converts [m] to [in]
 q_c = q_c * 0.316998; %converts [W/m^2] to [Btu/hr-ft^2]
 q_t = q_t * 0.316998; %converts [W/m^2] to [Btu/hr-ft^2]
-%m_lost = m_lost * 2.2 %converts [kg] to [lbm]
 %% Build Output Vector
 out = [OF cstar Isp m_dot_total m_dot_fuel m_dot_ox Dt eps De Dc Lstar Lc q_c q_t];
 end
