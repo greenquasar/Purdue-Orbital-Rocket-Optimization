@@ -65,7 +65,7 @@ c_t = c_f; % wrong for now
 C_star_vec = squeeze(data_eq('cstar'));
 C_star = C_star_vec(2);
 isp_vec = squeeze(data_eq('isp'));
-Isp = isp_vec(2);
+Isp = isp_vec(2)/9.81; % convert m/s to s
 
 %uncomment below to see list of all terms cea outputs
 %keys(data_eq)
