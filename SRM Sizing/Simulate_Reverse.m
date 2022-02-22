@@ -34,7 +34,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     %Mdot, array of mass flow
     %A_t, throat area required to meet max pressure constraint at end of burn(m^2)
     %deltaV, delta V of stage (m/s)
-    %specificImpulse, average of Isp over burn (s)
+    %avgSpecificImpulse, average of Isp over burn (s)
     %propMass, (kg)
     %C_t, array of coefficient of thrust (1)
     %C_star, array of chamber pressure (Pa)
@@ -147,42 +147,42 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     %graphs
     figure(1);
     subplot(2,4,1);
-    plot(-T,Thrust);
+    plot(flip(T),Thrust);
     title('Thrust');
     grid on;
     
     subplot(2,4,2);
-    plot(-T,M);
+    plot(flip(T),M);
     title('Mass');
     grid on;
     
     subplot(2,4,3);
-    plot(-T,W);
+    plot(flip(T),W);
     title('Web Distance');
     grid on;
     
     subplot(2,4,4);
-    plot(-T,P_c);
+    plot(flip(T),P_c);
     title('Chamber Pressure');
     grid on;
     
     subplot(2,4,5);
-    plot(-T,Mdot);
+    plot(flip(T),Mdot);
     title('Mass Flow');
     grid on;
     
     subplot(2,4,6);
-    plot(-T,R_b);
+    plot(flip(T),R_b);
     title('Burn Rate');
     grid on;
     
     subplot(2,4,7);
-    plot(-T,C_star);
+    plot(flip(T),C_star);
     title('C Star');
     grid on;
     
     subplot(2,4,8);
-    plot(-T,C_t);
+    plot(flip(T),C_t);
     title('Thrust Coefficient');
     grid on;
 end
