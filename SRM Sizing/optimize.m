@@ -5,6 +5,7 @@ function [length, width, inner_width, final_simulation] = ...
     OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs, diaU, lenU)
     %% Inputs
     %dt: time step (s)
+    % test
     %error_tolerance: acceptable error in deltaV and TWR (%)
     %deltaV: desired deltaV (m/s)
     %TWR: thrust to weight ratio (1)
