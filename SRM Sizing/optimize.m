@@ -1,4 +1,4 @@
-%[length, width, inner_width, final_simulation] = optimize(5, 6, 1.5, 10200000, 'circular', 0.077, 0, 101325, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 2.5, 10)
+%[length, width, inner_width, final_simulation] = optimize(5, 6, 1.5, 10200000, 'circular', 0.077, 0, 101325, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.2032, 10)
 
 %% solid rocket motor sizing code
 function [length, width, inner_width, final_simulation] = ...
@@ -33,7 +33,7 @@ function [length, width, inner_width, final_simulation] = ...
     %% Program
     %passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens]
     
-    max_iterations = 10;
+    max_iterations = 2;
     %deltaV should be controlled by length??
     %TWR should be controlled by width and inner radius??
 
@@ -57,16 +57,27 @@ function [length, width, inner_width, final_simulation] = ...
         end
     end
     
-    indexx = find(LoopResults(:,4) >= delta_V)
-    massWorking = min(LoopResults(:,4));
-    deltaVWorking = LoopResults(min(LoopResults(:,4)), 5);
-    diameterWorking = LoopResults(min(LoopResults(:,4)), 1);
-    lengthWorking = LoopResults(min(LoopResults(:,4)), 2);
-    inradWorking = LoopResults(min(LoopResults(:,4)), 3);
+    %select best candidate based off the mass
     
-    mass = min(massWorking);
+    indexDW = LoopResults(:,5) > delta_V
+    deltaVWorking = LoopResults(indexDW, 5)
+    massWorking = LoopResults(indexDW,4)
+    diameterWorking = LoopResults(indexDW, 1)
+    lengthWorking = LoopResults(indexDW, 2)
+    inradWorking = LoopResults(indexDW, 3)
+    
+    mass = min(massWorking)
     width = diameterWorking(mass == massWorking);
     length = lengthWorking(mass == massWorking);
     inner_width = inradWorking(mass == massWorking);
 
+    final_simulation = 1;
+    
+    %output thrust to weight ratio
+    g = 9.81; %gravitational constant in m/s^2
+    weight = mass * g; %weight in N
+    thrustWeightRatio = Thrust / weight; %thrust to weight ratio
+    
+    %export results to excel file
+    
 end
