@@ -1,4 +1,4 @@
-%[length, width, inner_width, final_simulation] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 0, 101325, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.2032, 10)
+%[length, width, inner_width, final_simulation] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 5, 8161.4, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.2032, 10)
 
 %% solid rocket motor sizing code
 function [length, width, inner_width, final_simulation] = ...
