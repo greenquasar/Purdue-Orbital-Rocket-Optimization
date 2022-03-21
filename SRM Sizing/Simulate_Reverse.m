@@ -127,8 +127,8 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
         Mdot(i) = Surface_Area(shape, W(i), stage_length)*R_b(i)*propDens;
         M(i) = M(i-1) + Mdot(i)*dt;
         Thrust(i) = Isp(i) * g * Mdot(i);
-        [T, a, P, rho] = atmosisa(altitude(i));
-        Drag(i) = 0.5 * Cd * rho * vel(i)^2 * (stage_width / 2)^2 * pi;
+        [rho,a,Temp,P,nu,z,sigma] = atmos(altitude(i-1));
+        Drag(i) = 0.5 * Cd * rho * vel(i-1)^2 * (stage_width / 2)^2 * pi;
         fNet(i) = Thrust(i) - Drag(i) - M(i) * g;
         accel(i) = fNet(i) / M(i);
         vel(i) = accel(i) * dt + vel(i-1);
@@ -142,8 +142,8 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     accel = Thrust(2:end)./M(2:end);
     
     % Final Altitude
-    while vel(i) >= 0
-        [T, a, P, rho] = atmosisa(altitude(i));
+    while vel(i-1) >= 0
+        [rho,a,Temp,P,nu,z,sigma] = atmos(altitude(i-1));
         Drag(i) = 0.5 * Cd * rho * vel(i)^2 * (stage_width / 2)^2 * pi;
         fNet(i) = -Drag(i) - M(i) * g;
         accel(i) = fNet(i) / M(i);
