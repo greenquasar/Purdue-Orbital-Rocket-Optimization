@@ -127,29 +127,35 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
         Mdot(i) = Surface_Area(shape, W(i), stage_length)*R_b(i)*propDens;
         M(i) = M(i-1) + Mdot(i)*dt;
         Thrust(i) = Isp(i) * g * Mdot(i);
-        [rho,a,Temp,P,nu,z,sigma] = atmos(altitude(i-1));
-        Drag(i) = 0.5 * Cd * rho * vel(i-1)^2 * (stage_width / 2)^2 * pi;
-        fNet(i) = Thrust(i) - Drag(i) - M(i) * g;
-        accel(i) = fNet(i) / M(i);
-        vel(i) = accel(i) * dt + vel(i-1);
-        altitude(i) = vel(i) * dt / 2 + vel(i-1) + altitude(i-1);
-        disp(altitude(i));
+        
         %increment index
         i = i + 1;
     end
     disp("Progress: 100%")
     burn_time = T(end);
+    ifinal = i;
     accel = Thrust(2:end)./M(2:end);
     
     % Final Altitude
+    i = 2;
     while vel(i-1) >= 0
-        [rho,a,Temp,P,nu,z,sigma] = atmos(altitude(i-1));
-        Drag(i) = 0.5 * Cd * rho * vel(i)^2 * (stage_width / 2)^2 * pi;
-        fNet(i) = -Drag(i) - M(i) * g;
-        accel(i) = fNet(i) / M(i);
-        vel(i) = accel(i) * dt + vel(i-1);
-        altitude(i) = vel(i) * dt / 2 + vel(i-1) + altitude(i-1);
-        disp(altitude(i));
+        if i <= ifinal
+            [Temp, a, P, rho] = atmosisa(altitude(i-1));
+            Drag(i) = 0.5 * Cd * rho * vel(i-1)^2 * (stage_width / 2)^2 * pi;
+            fNet(i) = Thrust(ifinal - i + 1) - Drag(i) - M(ifinal - i + 1) * g;
+            accel(i) = fNet(i) / M(ifinal - i + 1);
+            vel(i) = accel(i) * dt + vel(i-1);
+            altitude(i) = vel(i) * dt / 2 + vel(i) + altitude(i-1);
+            disp(altitude(i));
+        else
+            [Temp, a, P, rho] = atmosisa(altitude(i-1));
+            Drag(i) = 0.5 * Cd * rho * vel(i-1)^2 * (stage_width / 2)^2 * pi;
+            fNet(i) = -Drag(i) - M(1) * g;
+            accel(i) = fNet(i) / M(1);
+            vel(i) = accel(i) * dt + vel(i-1);
+            altitude(i) = vel(i) * dt / 2 + vel(i) + altitude(i-1);
+            disp(altitude(i));
+        end
         i = i + 1;
     end
     % Specific Impusle (Isp) [sec]
@@ -208,6 +214,21 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     subplot(2,4,8);
     plot(flip(T),C_t);
     title('Thrust Coefficient');
+    grid on;
+    
+    figure(2)
+    plot(flip(T),flip(altitude(1:length(T))));
+    title('Altitude (m)');
+    grid on;
+    
+    figure(3)
+    plot(flip(T),flip(vel(1:length(T))));
+    title('velocity (m/s)');
+    grid on;
+    
+    figure(4)
+    plot(flip(T),flip(Drag(1:length(T))));
+    title('drag (N)');
     grid on;
 end
 
