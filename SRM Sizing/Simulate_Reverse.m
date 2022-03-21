@@ -1,5 +1,5 @@
 %% solid rocket motor simulation code
-function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star] = ...
+function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star, TWR] = ...
     Simulate_Reverse(dt, stage_length, stage_width, innerWidth, maxPres, shape, f_inert, payloadMass, atmoPressure, ...
     OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs) 
     %% Inputs
@@ -139,6 +139,8 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     v_e = avgSpecificImpulse * g;  %effective exhaust velocity
 
     deltaV = v_e * log(M(end) / M(1));
+    
+    TWR = T./(M.*g);
     %%%% Old code (using Riemman Sum):
     %deltaV = trapz(dt, Thrust(2:end)./M(2:end));
     %deltaV = trapz(dt, Thrust(2:end)) / trapz(dt, M(2:end));
