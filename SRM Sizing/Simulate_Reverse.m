@@ -43,6 +43,9 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     
     % Constants (SI)
     g = 9.80665;    %[m/s^2]
+    
+    %Drag Coefficient
+    Cd = 0.6;
 
     %GUESSTIMATED DUMMY VALUES FROM CEARUN, get better ones from CEA
 
@@ -87,7 +90,9 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     T(1) = 0;
     W(1) = r_max;
     P_c(1) = maxPres;
-    R_b(1) = (C * (P_c(1) / (1 * 10^6)) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
+    R_b(1) = (C * (P_c(1) / (1 * 10^6)) ^ n) * 0.001; %Change Pressure unit to MPA and Burn rate to m/s
+    vel(1) = 0;
+    altitude(1) = 0;
     propVol = (Area(shape, r_max)-Area(shape, r_min))*stage_length;
     propMass = propVol*propDens;
     f_prop = 1-f_inert;
@@ -122,7 +127,13 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
         Mdot(i) = Surface_Area(shape, W(i), stage_length)*R_b(i)*propDens;
         M(i) = M(i-1) + Mdot(i)*dt;
         Thrust(i) = Isp(i) * g * Mdot(i);
-        
+        [T, a, P, rho] = atmosisa(altitude(i));
+        Drag(i) = 0.5 * Cd * rho * vel(i)^2 * (stage_width / 2)^2 * pi;
+        fNet(i) = Thrust(i) - Drag(i) - M(i) * g;
+        accel(i) = fNet(i) / M(i);
+        vel(i) = accel(i) * dt + vel(i-1);
+        altitude(i) = vel(i) * dt / 2 + vel(i-1) + altitude(i-1);
+        disp(altitude(i));
         %increment index
         i = i + 1;
     end
@@ -130,6 +141,17 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     burn_time = T(end);
     accel = Thrust(2:end)./M(2:end);
     
+    % Final Altitude
+    while vel(i) >= 0
+        [T, a, P, rho] = atmosisa(altitude(i));
+        Drag(i) = 0.5 * Cd * rho * vel(i)^2 * (stage_width / 2)^2 * pi;
+        fNet(i) = -Drag(i) - M(i) * g;
+        accel(i) = fNet(i) / M(i);
+        vel(i) = accel(i) * dt + vel(i-1);
+        altitude(i) = vel(i) * dt / 2 + vel(i-1) + altitude(i-1);
+        disp(altitude(i));
+        i = i + 1;
+    end
     % Specific Impusle (Isp) [sec]
     avgSpecificImpulse = sum(Isp, 'all')/max(size(Isp));   %max(size(X)) is the same as length(X)
     %%%% Old code (using Riemman Sum): 

@@ -1,4 +1,4 @@
-%[length, width, inner_width, final_simulation] = optimize(5, 6, 1.5, 10200000, 'circular', 0.077, 0, 101325, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.2032, 10)
+%[length, width, inner_width, final_simulation] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 5, 8161.4, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.2032, 10)
 
 %% solid rocket motor sizing code
 function [length, width, inner_width, final_simulation] = ...
@@ -39,7 +39,7 @@ function [length, width, inner_width, final_simulation] = ...
 
     %start with a guess for length and width
     %loop if iter less than max_iter
-    diaL = 0.1 * diaU;
+    diaL = 0.1 * diaU; %diaL outputs complex numbers for deltaV 
     lenL = 0.1 * lenU;
     index = 0;
     NewEntry = [0, 0, 0, 0, 0];
@@ -59,7 +59,7 @@ function [length, width, inner_width, final_simulation] = ...
     
     %select best candidate based off the mass
     
-    indexDW = LoopResults(:,5) > delta_V
+    indexDW = LoopResults(:,5) > delta_V;
     deltaVWorking = LoopResults(indexDW, 5)
     massWorking = LoopResults(indexDW,4)
     diameterWorking = LoopResults(indexDW, 1)
@@ -74,10 +74,7 @@ function [length, width, inner_width, final_simulation] = ...
     final_simulation = 1;
     
     %output thrust to weight ratio
-    g = 9.81; %gravitational constant in m/s^2
-    weight = mass * g; %weight in N
-    thrustWeightRatio = Thrust / weight; %thrust to weight ratio
+    fprintf('The thrust to weight ratio will be: %.2f', TWR);
     
     %export results to excel file
-    
 end
