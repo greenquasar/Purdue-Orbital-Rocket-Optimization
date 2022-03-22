@@ -44,8 +44,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     % Constants (SI)
     g = 9.80665;    %[m/s^2]
     
-    %Drag Coefficient
-    Cd = 0.6;
+
 
     %GUESSTIMATED DUMMY VALUES FROM CEARUN, get better ones from CEA
 
@@ -91,7 +90,6 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     W(1) = r_max;
     P_c(1) = maxPres;
     R_b(1) = (C * (P_c(1) / (1 * 10^6)) ^ n) * 0.001; %Change Pressure unit to MPA and Burn rate to m/s
-    vel(1) = 0;
     altitude(1) = 0;
     propVol = (Area(shape, r_max)-Area(shape, r_min))*stage_length;
     propMass = propVol*propDens;
@@ -133,31 +131,9 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     end
     disp("Progress: 100%")
     burn_time = T(end);
-    ifinal = i;
     accel = Thrust(2:end)./M(2:end);
     
-    % Final Altitude
-    i = 2;
-    while vel(i-1) >= 0
-        if i <= ifinal
-            [Temp, a, P, rho] = atmosisa(altitude(i-1));
-            Drag(i) = 0.5 * Cd * rho * vel(i-1)^2 * (stage_width / 2)^2 * pi;
-            fNet(i) = Thrust(ifinal - i + 1) - Drag(i) - M(ifinal - i + 1) * g;
-            accel(i) = fNet(i) / M(ifinal - i + 1);
-            vel(i) = accel(i) * dt + vel(i-1);
-            altitude(i) = vel(i) * dt / 2 + vel(i) + altitude(i-1);
-            disp(altitude(i));
-        else
-            [Temp, a, P, rho] = atmosisa(altitude(i-1));
-            Drag(i) = 0.5 * Cd * rho * vel(i-1)^2 * (stage_width / 2)^2 * pi;
-            fNet(i) = -Drag(i) - M(1) * g;
-            accel(i) = fNet(i) / M(1);
-            vel(i) = accel(i) * dt + vel(i-1);
-            altitude(i) = vel(i) * dt / 2 + vel(i) + altitude(i-1);
-            disp(altitude(i));
-        end
-        i = i + 1;
-    end
+
     % Specific Impusle (Isp) [sec]
     avgSpecificImpulse = sum(Isp, 'all')/max(size(Isp));   %max(size(X)) is the same as length(X)
     %%%% Old code (using Riemman Sum): 
@@ -168,7 +144,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
 
     deltaV = v_e * log(M(end) / M(1));
     
-    TWR = T./(M.*g);
+    TWR = Thrust./(M.*g);
     %%%% Old code (using Riemman Sum):
     %deltaV = trapz(dt, Thrust(2:end)./M(2:end));
     %deltaV = trapz(dt, Thrust(2:end)) / trapz(dt, M(2:end));
@@ -177,7 +153,8 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     %graphs
     figure(1);
     subplot(2,4,1);
-    plot(flip(T),Thrust);
+    plot(linspace(0, dt*length(Thrust), length(Thrust)) ,Thrust);
+    
     title('Thrust');
     grid on;
     
@@ -215,21 +192,7 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     plot(flip(T),C_t);
     title('Thrust Coefficient');
     grid on;
-    
-    figure(2)
-    plot(flip(T),flip(altitude(1:length(T))));
-    title('Altitude (m)');
-    grid on;
-    
-    figure(3)
-    plot(flip(T),flip(vel(1:length(T))));
-    title('velocity (m/s)');
-    grid on;
-    
-    figure(4)
-    plot(flip(T),flip(Drag(1:length(T))));
-    title('drag (N)');
-    grid on;
+
 end
 
 function area = Surface_Area(shape, w, l)
