@@ -40,7 +40,12 @@ function [length, width, inner_width, final_simulation] = ...
     %start with a guess for length and width
     %loop if iter less than max_iter
     diaL = 0.1 * diaU; %diaL outputs complex numbers for deltaV 
-    lenL = 0.1 * lenU;
+    lenL = 0.1 * lenU; 
+    
+    %upper values needed to be added
+    %upper diameter = 8 inches
+    %upper length ?
+    
     index = 0;
     NewEntry = [0, 0, 0, 0, 0];
     LoopResults = zeros(5,5);
@@ -75,6 +80,4 @@ function [length, width, inner_width, final_simulation] = ...
     
     %output thrust to weight ratio
     fprintf('The thrust to weight ratio will be: %.2f', TWR);
-    
-    %export results to excel file
 end
