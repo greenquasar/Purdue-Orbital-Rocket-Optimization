@@ -1,5 +1,5 @@
 %% solid rocket motor simulation code
-function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star, TWR] = ...
+function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star, TWR] = ...
     Simulate_Reverse(dt, stage_length, stage_width, innerWidth, maxPres, shape, f_inert, payloadMass, atmoPressure, ...
     OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs) 
     %% Inputs
@@ -90,7 +90,6 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     W(1) = r_max;
     P_c(1) = maxPres;
     R_b(1) = (C * (P_c(1) / (1 * 10^6)) ^ n) * 0.001; %Change Pressure unit to MPA and Burn rate to m/s
-    altitude(1) = 0;
     propVol = (Area(shape, r_max)-Area(shape, r_min))*stage_length;
     propMass = propVol*propDens;
     f_prop = 1-f_inert;
@@ -184,14 +183,24 @@ function [T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificIm
     grid on;
     
     subplot(2,4,7);
-    plot(flip(T),C_star);
-    title('C Star');
+    plot(flip(T),TWR);
+    title('Thrust to Weight Ratio');
     grid on;
     
     subplot(2,4,8);
     plot(flip(T),C_t);
     title('Thrust Coefficient');
     grid on;
+    
+    
+    %%flip things for output
+    M = flip(M);
+    Thrust = flip(Thrust);
+    W = flip(W);
+    P_c = flip(P_c);
+    R_b = flip(R_b);
+    Mdot = flip(Mdot);
+    TWR = flip(TWR);
 
 end
 
