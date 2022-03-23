@@ -9,22 +9,19 @@ function [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, dtFactor,
     % Final Altitude
     i = 2;
     while Velocity(i-1) >= 0
+        [rho,a,Temp,P,nu,z,sigma] = atmos(Altitude(i-1));
         if i <= length(Thrust)*dtFactor
-            [rho,a,Temp,P,nu,z,sigma] = atmos(Altitude(i-1));
             Drag(i) = 0.5 * Cd * rho * Velocity(i-1)^2 * (stage_width / 2)^2 * pi;
             fNet(i) = Thrust(round(i/dtFactor)) - Drag(i) - M(round(i/dtFactor)) * g;
             accel(i) = fNet(i) / M(round(i/dtFactor));
             Velocity(i) = accel(i) * dt + Velocity(i-1);
-            Altitude(i) = Velocity(i) * dt / 2 + Velocity(i) + Altitude(i-1);
-            %disp(Altitude(i));
+            Altitude(i) = Velocity(i) * dt + Altitude(i-1);
         else
-            [rho,a,Temp,P,nu,z,sigma] = atmos(Altitude(i-1));
             Drag(i) = 0.5 * Cd * rho * Velocity(i-1)^2 * (stage_width / 2)^2 * pi;
             fNet(i) = -Drag(i) - M(end) * g;
             accel(i) = fNet(i) / M(end);
             Velocity(i) = accel(i) * dt + Velocity(i-1);
-            Altitude(i) = Velocity(i) * dt / 2 + Velocity(i) + Altitude(i-1);
-            %disp(Altitude(i));
+            Altitude(i) = Velocity(i) * dt + Altitude(i-1);
         end
         i = i + 1;
     end
@@ -44,5 +41,7 @@ function [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, dtFactor,
     plot(flip(T),flip(Drag(1:length(T))));
     title('drag (N)');
     grid on;
+    
+    disp(Altitude(end));
 
 end
