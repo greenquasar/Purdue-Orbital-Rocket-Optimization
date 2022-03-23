@@ -1,4 +1,4 @@
-%[length, width, inner_width, final_simulation] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 0, 101325, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.2032, 10)
+%[length, width, inner_width, final_simulation] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 5, 8161.4, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.2032, 10)
 
 %% solid rocket motor sizing code
 function [length, width, inner_width, final_simulation] = ...
@@ -40,7 +40,12 @@ function [length, width, inner_width, final_simulation] = ...
     %start with a guess for length and width
     %loop if iter less than max_iter
     diaL = 0.1 * diaU; %diaL outputs complex numbers for deltaV 
-    lenL = 0.1 * lenU;
+    lenL = 0.1 * lenU; 
+    
+    %upper values needed to be added
+    %upper diameter = 8 inches
+    %upper length ?
+    
     index = 0;
     NewEntry = [0, 0, 0, 0, 0];
     LoopResults = zeros(5,5);
@@ -75,6 +80,4 @@ function [length, width, inner_width, final_simulation] = ...
     
     %output thrust to weight ratio
     fprintf('The thrust to weight ratio will be: %.2f', TWR);
-    
-    %export results to excel file
 end

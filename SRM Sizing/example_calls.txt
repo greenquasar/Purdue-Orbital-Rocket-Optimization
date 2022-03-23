@@ -1,15 +1,17 @@
 Simulate_Reverse:
 HTPB+AP
-[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 1, 0.5, 0.25, 1895000, 'circular', 0.25, 21.348, 10204.24, 0.4285, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)"], [298], [1950], [1]);
+[T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 1, 0.5, 0.25, 1895000, 'circular', 0.25, 21.348, 10204.24, 0.4285, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)"], [298], [1950], [1]);
 HTPB+AP+AL
-[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 1, 0.5, 0.25, 1895000, 'circular', 0.25, 21.348, 10204.24, 0.4285, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.9, 0.1]);
+[T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 1, 0.5, 0.25, 1895000, 'circular', 0.25, 21.348, 10204.24, 0.4285, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.9, 0.1]);
 Athena II First Stage (Castor 120)
-[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 9.02, 2.3368, 1.1684, 10200000, 'circular', 0.077, 0, 101325, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12]);
+[T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 9.02, 2.3368, 1.1684, 10200000, 'circular', 0.077, 0, 101325, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12]);
 AL as fuel
-[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 9.02, 2.3368, 1.1684, 10200000, 'circular', 0.25, 0, 101325, 2.22, ["HTPB","AL"], [298,200], [920,2710], [0.39,0.61], ["NH4CLO4(I)"], [298], [1950], [1]);
+[T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.5, 9.02, 2.3368, 1.1684, 10200000, 'circular', 0.25, 0, 101325, 2.22, ["HTPB","AL"], [298,200], [920,2710], [0.39,0.61], ["NH4CLO4(I)"], [298], [1950], [1]);
 Space Shuttle SRM
-[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(1, 38.47, 3.847, 1.9235, 6322680, 'circular', 1-0.883, 0, 101325, 6.143, ["PBAN"], [298], [1200], [1], ["NH4CLO4(I)","AL"], [298,200], [1950,2710], [0.814,0.186]);
+[T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(1, 38.47, 3.847, 1.9235, 6322680, 'circular', 1-0.883, 0, 101325, 6.143, ["PBAN"], [298], [1200], [1], ["NH4CLO4(I)","AL"], [298,200], [1950,2710], [0.814,0.186]);
 
+Purdue Orbital Sounding Rocket (10000 ft / 3048 m)
+[T, W, P_c, Thrust, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.05, 0.25, 0.1, 0.05, 3447000, 'circular', 0.25, 21.348, 10204.24, 0.4285, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.9, 0.1]);
 
 optimize:
 Athena II First Stage [test]---
