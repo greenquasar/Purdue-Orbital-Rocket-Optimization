@@ -33,7 +33,7 @@ function [length, width, inner_width, final_simulation] = ...
     %% Program
     %passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens]
     
-    max_iterations = 2;
+    max_iterations = 1;
     %deltaV should be controlled by length??
     %TWR should be controlled by width and inner radius??
 
