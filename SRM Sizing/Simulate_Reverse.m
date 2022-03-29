@@ -90,6 +90,11 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     T(1) = 0;
     W(1) = r_max;
     P_c(1) = maxPres;
+    
+    
+    %Rocket Optimized for average Chamber Pressure instead of Maximum PSI
+    %P_c(1) = 2530375.93;
+    
     R_b(1) = (C * (P_c(1) / (1 * 10^6)) ^ n) * 0.001; %Change Pressure unit to MPA and Burn rate to m/s
     propVol = (Area(shape, r_max)-Area(shape, r_min))*stage_length;
     propMass = propVol*propDens;
@@ -138,7 +143,7 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     avgSpecificImpulse = sum(Isp, 'all')/max(size(Isp));   %max(size(X)) is the same as length(X)
     %%%% Old code (using Riemman Sum): 
     %specificImpulse = trapz(dt,Thrust)/(propMass*g);
-    
+  
     % Delta-V [m/s]
     v_e = avgSpecificImpulse * g;  %effective exhaust velocity
 
