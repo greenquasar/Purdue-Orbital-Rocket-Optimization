@@ -14,6 +14,8 @@ Purdue Orbital Sounding Rocket (10000 ft / 3048 m)
 [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass] = Simulate_Reverse(0.05, 0.545, 0.1, 0.05, 3447000, 'circular', 0.25, 21.348, 10204.24, 0.4285, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.9, 0.1]);
 [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, 0.05, 0.1, 0);
 
+[T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star, Altitude, Drag, Velocity, final_altitude] = Altitude_Optimization(3048, 0, 5, 10, 0.01, 0.05, 3447000, 'circular', 0.25, 21.348, 10204.24, 0.4285, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.9, 0.1]);
+
 optimize:
 Athena II First Stage [test]---
 [length, width, inner_width, final_simulation] = optimize(5, 6, 1.5, 10200000, 'circular', 0.077, 0, 101325, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 2.5, 10)
