@@ -1,8 +1,9 @@
-function [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, dtFactor, stage_width, starting_altitude)
+function [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_width, starting_altitude)
 
     %Constants
     Cd = 0.6;
     g = 9.81;
+    dtFactor = 1; %a remnant of a bygone era
     %Starting Values
     Velocity(1) = 0;
     Altitude(1) = starting_altitude;
