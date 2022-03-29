@@ -11,6 +11,7 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     %maxPres: maximum chamber pressure stage can withstand (Pa)
     %shape: circular/square shape: "circular"/"square"
     %f_inert: inert mass fraction
+    %payloadMass: mass of payload (kg)
     %atmoPressure: atmospheric pressure (Pa)
     %OF: oxidizer to fuel ratio
     %fuels: CEA fuel names, string (can be a list must use double quotes)
