@@ -1,4 +1,4 @@
-%[length, width, inner_width, final_simulation] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 5, 8161.4, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.2032, 10)
+%[length, width, inner_width, final_simulation] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 5, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.2032, 10)
 
 %% solid rocket motor sizing code
 function [length, width, inner_width, final_simulation] = ...
@@ -14,6 +14,7 @@ function [length, width, inner_width, final_simulation] = ...
     %shape: circular/square shape: "circular"/"square" 
     %maxPres: maximum chamber pressure stage can withstand (Pa)
     %f_inert: inert mass fraction
+    %payloadMass (kg)
     %shape: circular/square shape: "circular"/"square"
     %atmoPressure: atmospheric pressure (Pa)
     %OF: oxidizer to fuel ratio
@@ -33,13 +34,13 @@ function [length, width, inner_width, final_simulation] = ...
     %% Program
     %passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens]
     
-    max_iterations = 1;
+    max_iterations = 2;
     %deltaV should be controlled by length??
     %TWR should be controlled by width and inner radius??
 
     %start with a guess for length and width
     %loop if iter less than max_iter
-    diaL = 0.1 * diaU; %diaL outputs complex numbers for deltaV 
+    diaL = 0.1 * diaU; 
     lenL = 0.1 * lenU; 
     
     %upper values needed to be added
