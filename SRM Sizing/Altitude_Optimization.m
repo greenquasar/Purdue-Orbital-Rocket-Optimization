@@ -1,5 +1,6 @@
 %optimization for single stage sounding rocket
-function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star, Altitude, Drag, Velocity, final_altitude] = ...
+function [stage_length, stage_width, inner_width, ...
+    T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star, Altitude, Drag, Velocity, final_altitude] = ...
     Altitude_Optimization(target_altitude, starting_altitude, TWRmin, TWRmax, tolerance, ...
     dt, maxPres, shape, f_inert, payloadMass, atmoPressure, OF, ...
     fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs)
@@ -26,6 +27,9 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     %o_fracs: mass fractions for each oxidizer (same length as oxidizer, sum to 1)
     
 %% Outputs
+    %stage_length, length of stage (m)
+    %stage_width, diameter of stage (m)
+    %inner_width, inner diameter of fuel bore (m)
     %T, array of time steps (s)
     %W, array of web distance (m)
     %P_c, array of chamber pressure (Pa)
@@ -55,31 +59,67 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     %passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs];
     
     %guesses
-    stage_length = 1;
-    stage_width = 0.1;
-    innerWidth = 0.05;
+    stage_length = 0.3007;
+    stage_width  = 0.1733;
+    inner_width  = 0.0980;
     
     %do while loop
     while (1) 
         [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star] = ...
-    Simulate_Reverse(dt, stage_length, stage_width, innerWidth, maxPres, shape, f_inert, payloadMass, atmoPressure, ...
+    Simulate_Reverse(dt, stage_length, stage_width, inner_width, maxPres, shape, f_inert, payloadMass, atmoPressure, ...
     OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs);
     [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_width, starting_altitude);
         final_altitude = max(Altitude);
-        if (tolerated(final_altitude, target_altitude, tolerance)) %altitude
-            %maybe need to calculate how much to change the width or the
-            %length to keep volume const
-            %stage width
-            factor = target_altitude/final_altitude;
-            stage_width = stage_width * factor;
-        elseif (tolerated(max(TWR), TWRmax, tolerance)) %max TWR
-            %stage length
-            factor = TWRmax/max(TWR);
-            stage_length = stage_length * factor;
-        elseif (tolerated(TWR(1), TWRmin, tolerance)) %min TWR
-            %inner width
-            factor = TWRmin/TWR(1);
-            inner_width = inner_width * factor;
+        altitude_pct_error = 100 * abs(final_altitude-target_altitude)/target_altitude;
+        TWRmax_pct_error = 100 * abs(max(TWR)-TWRmax)/TWRmax;
+        TWRmin_pct_error = 100 * abs(TWR(1)-TWRmin)/TWRmin;
+        fprintf("Stage Length = %.4f | Stage Width = %.4f | Inner Width = %.4f\n", stage_length, stage_width, inner_width);
+        fprintf("Target Altitude = %.2f | Current Altitude = %.2f | Error = %0.2f%%\n", target_altitude, final_altitude, altitude_pct_error);
+        fprintf("Target max TWR = %.2f | Current max TWR = %.2f | Error = %0.2f%%\n", TWRmax, max(TWR), TWRmax_pct_error);
+        fprintf("Target min TWR = %.2f | Current min TWR = %.2f | Error = %0.2f%%\n", TWRmin, TWR(1), TWRmin_pct_error);
+        if (~tolerated(final_altitude, target_altitude, tolerance) || ~tolerated(max(TWR), TWRmax, tolerance) || ~tolerated(TWR(1), TWRmin, tolerance)) %altitude          
+            bs = tolerated(final_altitude, target_altitude, tolerance) + tolerated(max(TWR), TWRmax, tolerance) + tolerated(TWR(1), TWRmin, tolerance); %bs factor
+            stage_length_factor = 1;
+            stage_width_factor = 1;
+            inner_width_factor = 1;
+            
+            %Altitude           
+            %factor = ((sqrt(target_altitude/final_altitude)-1)/(3*(3+bs))) + 1;
+            if (~tolerated(final_altitude, target_altitude, tolerance)) 
+            factor = (target_altitude/final_altitude)^(1/3);
+            stage_length_factor = stage_length_factor * factor;
+            stage_width_factor = stage_width_factor * factor;
+            inner_width_factor = inner_width_factor / factor;   
+            end
+            
+            %TWR max
+            if (~tolerated(max(TWR), TWRmax, tolerance))
+            %factor = ((sqrt(TWRmax/max(TWR))-1)/(3*(3+bs))) + 1;
+            factor = (TWRmax/max(TWR))^(1/3);
+            stage_length_factor = stage_length_factor * factor;
+            stage_width_factor = stage_width_factor * factor;
+            %inner_width_factor = inner_width_factor / factor;
+            end
+                     
+            %TWR min
+            if (~tolerated(max(TWR), TWRmax, tolerance))
+            %factor = ((sqrt(TWRmin/TWR(1))-1)/(3*(3+bs))) + 1;
+            factor = (TWRmin/TWR(1))^(1/3);
+            stage_length_factor = stage_length_factor * factor;
+            stage_width_factor = stage_width_factor / factor;
+            inner_width_factor = inner_width_factor * factor;
+            end
+            
+            fprintf("Scaling Stage Length by %0.4f\n", stage_length_factor);
+            fprintf("Scaling Stage Width by %0.4f\n", stage_width_factor);
+            fprintf("Scaling Inner Width by %0.4f\n", inner_width_factor);
+            
+            stage_length = stage_length * stage_length_factor;
+            stage_width = stage_width * stage_width_factor;
+            inner_width = inner_width * inner_width_factor;
+            
+            
+            
         else
             break;
         end
@@ -87,6 +127,6 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     
 end
 
-function ans = tolerated(value, target, tolerance)
-    ans = abs(target-value)/target < tolerance;
+function result = tolerated(value, target, tolerance)
+    result = abs(target-value)/target < tolerance;
 end
