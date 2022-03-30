@@ -104,9 +104,12 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     inertMass = totalMass-propMass;
     M(1)=inertMass;
     i = 2;
+    
+    my_waitbar1 = waitbar(0, "Simulation Progress:");
     while W(i-1) > r_min
         %disp(string(W(i-1)/r_max)-innerWidth)
-        disp("Progress: "+string(2*(r_max-W(i-1))*100/r_max)+"%")
+%         disp("Progress: "+string(2*(r_max-W(i-1))*100/r_max)+"%")
+        waitbar(1-(W(i-1)-r_min)/(r_max-r_min), my_waitbar1);
         %time step
         T(i) = T(i-1) + dt;
         %CEA Call
@@ -135,7 +138,8 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
         %increment index
         i = i + 1;
     end
-    disp("Progress: 100%")
+    %disp("Progress: 100%")
+    close(my_waitbar1);
     burn_time = T(end);
     accel = Thrust(2:end)./M(2:end);
     
