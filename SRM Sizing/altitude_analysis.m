@@ -26,19 +26,19 @@ function [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_wid
         end
         i = i + 1;
     end
-        
+    
     T = linspace(0, dt*length(Altitude), length(Altitude));
-    figure(2)
+    figure(3)
     plot(flip(T),flip(Altitude(1:length(T))));
     title('Altitude (m)');
     grid on;
     
-    figure(3)
+    figure(4)
     plot(flip(T),flip(Velocity(1:length(T))));
     title('velocity (m/s)');
     grid on;
     
-    figure(4)
+    figure(5)
     plot(flip(T),flip(Drag(1:length(T))));
     title('drag (N)');
     grid on;

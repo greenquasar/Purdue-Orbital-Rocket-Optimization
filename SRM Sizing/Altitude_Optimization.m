@@ -64,12 +64,13 @@ function [stage_length, stage_width, inner_width, ...
     inner_width  = 0.0980;
     
     %do while loop
-    while (1) 
+    while (1)
         [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star] = ...
     Simulate_Reverse(dt, stage_length, stage_width, inner_width, maxPres, shape, f_inert, payloadMass, atmoPressure, ...
     OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs);
     [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_width, starting_altitude);
         final_altitude = max(Altitude);
+        RocketDrawer(stage_length, stage_width, inner_width);
         altitude_pct_error = 100 * abs(final_altitude-target_altitude)/target_altitude;
         TWRmax_pct_error = 100 * abs(max(TWR)-TWRmax)/TWRmax;
         TWRmin_pct_error = 100 * abs(TWR(1)-TWRmin)/TWRmin;
