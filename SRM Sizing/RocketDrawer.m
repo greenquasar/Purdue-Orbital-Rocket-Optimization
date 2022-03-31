@@ -18,5 +18,6 @@ function RocketDrawer(stage_length, stage_width, inner_width)
     legend("Body", "Web", "Body");
     axis padded
     axis equal
+    movegui('northeast');
     hold off
 end

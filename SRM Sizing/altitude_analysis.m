@@ -32,17 +32,17 @@ function [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_wid
     plot(flip(T),flip(Altitude(1:length(T))));
     title('Altitude (m)');
     grid on;
-    
+    movegui('southwest');
     figure(4)
     plot(flip(T),flip(Velocity(1:length(T))));
     title('velocity (m/s)');
     grid on;
-    
+    movegui('south');
     figure(5)
     plot(flip(T),flip(Drag(1:length(T))));
     title('drag (N)');
     grid on;
-    
+    movegui('southeast');
     disp(Altitude(end));
 
 end

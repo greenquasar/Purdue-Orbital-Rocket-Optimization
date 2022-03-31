@@ -202,7 +202,7 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     plot(flip(T),C_t);
     title('Thrust Coefficient');
     grid on;
-    
+    movegui('northwest');
     
     %%flip things for output
     M = flip(M);
