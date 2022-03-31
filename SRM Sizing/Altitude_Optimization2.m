@@ -58,9 +58,9 @@ function [stage_length, stage_width, inner_width, ...
     %passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs];
     
     %guesses
-    stage_length = 0.2809;
-    stage_width  = 0.1834;
-    inner_width  = 0.1053;
+    stage_length = 0.3050;
+    stage_width  = 0.1700;
+    inner_width  = 0.0950;
     
     range_factor = 1.5;
     stage_length_low  = stage_length/range_factor;
@@ -70,7 +70,15 @@ function [stage_length, stage_width, inner_width, ...
     inner_width_low   = inner_width/range_factor;
     inner_width_high  = inner_width*range_factor;
     
+    %stage_length_low  = 0.28;
+    %stage_length_high = 0.33;
+    %stage_width_low   = 0.14;
+    %stage_width_high  = 0.18;
+    %inner_width_low   = 0.08;
+    %inner_width_high  = 0.10;
+    
     %do while loop
+    my_waitbar = waitbar(0, "Initial Simulation", 'Name', "Altitude_Optimization2");
     while (1)  
         [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star] = ...
         Simulate_Reverse(dt, stage_length, stage_width, inner_width, maxPres, shape, f_inert, payloadMass, atmoPressure, ...
@@ -87,7 +95,7 @@ function [stage_length, stage_width, inner_width, ...
         fprintf("Target max TWR = %.2f | Current max TWR = %.2f | Error = %0.2f%%\n", TWRmax, max(TWR), TWRmax_pct_error);
         fprintf("Target min TWR = %.2f | Current min TWR = %.2f | Error = %0.2f%%\n", TWRmin, TWR(1), TWRmin_pct_error);
         
-        my_waitbar = waitbar(0, sprintf("Altitude Error = %.2f%%\nMax TWR Error = %.2f%%\nMin TWR Error = %.2f%%\nCurrent Iteration Progress:", altitude_pct_error, TWRmax_pct_error, TWRmin_pct_error));
+        waitbar(0, my_waitbar, "Current Iteration Progress:");
         
         if (tolerated(final_altitude, target_altitude, tolerance) && tolerated(max(TWR), TWRmax, tolerance) && tolerated(TWR(1), TWRmin, tolerance))      
             break;
@@ -125,11 +133,14 @@ function [stage_length, stage_width, inner_width, ...
                 end
             end
             
+            fprintf("Searching in range:\nStage Length: [%.4f, %.4f]\nStage Width:  [%.4f, %.4f]\nInner Width:  [%.4f, %.4f]\n",...
+                stage_length_low, stage_length_high, stage_width_low, stage_width_high, inner_width_low, inner_width_high);
+            
             %run iterations
             for x = 1:n
                 for y = 1:n
                     for z = 1:n
-                        fprintf("(%d,%d,%d)",x,y,z);
+                        %fprintf("(%d,%d,%d)",x,y,z);
                         stage_length = Dimensions(x,y,z,1);
                         stage_width = Dimensions(x,y,z,2);
                         inner_width = Dimensions(x,y,z,3);
@@ -143,13 +154,13 @@ function [stage_length, stage_width, inner_width, ...
                             [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_width, starting_altitude);
                             final_altitude = max(Altitude);
                             
-                            waitbar((x*(n^2)+y*n+z)/(n^3), my_waitbar);
+                            waitbar(((x-1)*(n^2)+(y-1)*n+z)/(n^3), my_waitbar, sprintf("Current Iteration Progress: (%d/%d)",((x-1)*(n^2)+(y-1)*n+z), n^3));
                             
                             altitude_pct_error = 100 * abs(final_altitude-target_altitude)/target_altitude;
                             TWRmax_pct_error = 100 * abs(max(TWR)-TWRmax)/TWRmax;
                             TWRmin_pct_error = 100 * abs(TWR(1)-TWRmin)/TWRmin;
 
-                            error = altitude_pct_error + TWRmax_pct_error + TWRmin_pct_error;
+                            error = altitude_pct_error^2 + TWRmax_pct_error^2 + TWRmin_pct_error^2;
                         end
                         Errors(x,y,z) = error;
                         
@@ -158,7 +169,7 @@ function [stage_length, stage_width, inner_width, ...
             end
             fprintf("\n");
             %find lowest error and set new limits
-            [v,loc] = min(Errors(:));
+            [~,loc] = min(Errors(:));
             [ii,jj,kk] = ind2sub(size(Errors),loc);
             stage_length = Dimensions(ii,jj,kk,1);
             stage_width  = Dimensions(ii,jj,kk,2);
@@ -176,9 +187,9 @@ function [stage_length, stage_width, inner_width, ...
             stage_width_high  = Dimensions(ii,jj+1,kk,2);
             inner_width_low   = Dimensions(ii,jj,kk-1,3);
             inner_width_high  = Dimensions(ii,jj,kk+1,3);
-            close(my_waitbar);
         end
     end
+    close(my_waitbar);
     
 end
 
