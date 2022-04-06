@@ -17,12 +17,14 @@ function [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_wid
             accel(i) = fNet(i) / M(round(i/dtFactor));
             Velocity(i) = accel(i) * dt + Velocity(i-1);
             Altitude(i) = Velocity(i) * dt + Altitude(i-1);
+            q(i) = 0.5 * rho * Velocity(i)^2;
         else
             Drag(i) = 0.5 * Cd * rho * Velocity(i-1)^2 * (stage_width / 2)^2 * pi;
             fNet(i) = -Drag(i) - M(end) * g;
             accel(i) = fNet(i) / M(end);
             Velocity(i) = accel(i) * dt + Velocity(i-1);
             Altitude(i) = Velocity(i) * dt + Altitude(i-1);
+            q(i) = 0.5 * rho * Velocity(i)^2;
         end
         i = i + 1;
     end
@@ -43,6 +45,11 @@ function [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_wid
     title('drag (N)');
     grid on;
     movegui('southeast');
+    figure(6)
+    plot(flip(T),flip(q(1:length(T))));
+    title('dynamic pressure (Pa)');
+    grid on;
+    movegui('northeast');
     disp(Altitude(end));
 
 end
