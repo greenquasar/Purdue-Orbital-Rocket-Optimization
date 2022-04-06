@@ -15,7 +15,7 @@ function RocketDrawer(stage_length, stage_width, inner_width)
     hold on
     plot(webX, webY);
     plot(widthX, widthY);
-    legend("Body", "Web", "Body");
+    legend("Height", "Inner Radius", "Outer Radius");
     axis padded
     axis equal
     movegui('northeast');
