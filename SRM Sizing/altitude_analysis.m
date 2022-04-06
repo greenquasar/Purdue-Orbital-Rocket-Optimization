@@ -46,7 +46,7 @@ function [Altitude, Drag, Velocity, DynamicPressure] = altitude_analysis(Thrust,
     grid on;
     movegui('southeast');
     figure(6)
-    plot(flip(T),flip(q(1:length(T))));
+    plot(flip(T),flip(DynamicPressure(1:length(T))));
     title('dynamic pressure (Pa)');
     grid on;
     movegui('northeast');
