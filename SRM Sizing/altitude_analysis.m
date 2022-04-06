@@ -1,4 +1,4 @@
-function [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_width, starting_altitude)
+function [Altitude, Drag, Velocity, DynamicPressure] = altitude_analysis(Thrust, M, dt, stage_width, starting_altitude)
 
     %Constants
     Cd = 0.6;
@@ -17,14 +17,14 @@ function [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_wid
             accel(i) = fNet(i) / M(round(i/dtFactor));
             Velocity(i) = accel(i) * dt + Velocity(i-1);
             Altitude(i) = Velocity(i) * dt + Altitude(i-1);
-            q(i) = 0.5 * rho * Velocity(i)^2;
+            DynamicPressure(i) = 0.5 * rho * Velocity(i)^2;
         else
             Drag(i) = 0.5 * Cd * rho * Velocity(i-1)^2 * (stage_width / 2)^2 * pi;
             fNet(i) = -Drag(i) - M(end) * g;
             accel(i) = fNet(i) / M(end);
             Velocity(i) = accel(i) * dt + Velocity(i-1);
             Altitude(i) = Velocity(i) * dt + Altitude(i-1);
-            q(i) = 0.5 * rho * Velocity(i)^2;
+            DynamicPressure(i) = 0.5 * rho * Velocity(i)^2;
         end
         i = i + 1;
     end
