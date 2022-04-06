@@ -1,7 +1,7 @@
 %optimization for single stage sounding rocket
 function [stage_length, stage_width, inner_width, ...
     T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star, Altitude, Drag, Velocity, final_altitude] = ...
-    Altitude_Optimization(target_altitude, starting_altitude, TWRmin, TWRmax, tolerance, ...
+    Altitude_Optimization(target_altitude, starting_altitude, TWRmin, dynamicPressMax, tolerance, ...
     dt, maxPres, shape, f_inert, payloadMass, atmoPressure, OF, ...
     fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs)
 %% Inputs
@@ -68,48 +68,25 @@ function [stage_length, stage_width, inner_width, ...
         [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpecificImpulse, propMass, C_t, C_star] = ...
     Simulate_Reverse(dt, stage_length, stage_width, inner_width, maxPres, shape, f_inert, payloadMass, atmoPressure, ...
     OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs);
-    [Altitude, Drag, Velocity] = altitude_analysis(Thrust, M, dt, stage_width, starting_altitude);
+    [Altitude, Drag, Velocity, DynamicPressure] = altitude_analysis(Thrust, M, dt, stage_width, starting_altitude);
         final_altitude = max(Altitude);
+        dynamic_pressure = max(DynamicPressure);
         RocketDrawer(stage_length, stage_width, inner_width);
         altitude_pct_error = 100 * abs(final_altitude-target_altitude)/target_altitude;
-        TWRmax_pct_error = 100 * abs(max(TWR)-TWRmax)/TWRmax;
-        TWRmin_pct_error = 100 * abs(TWR(1)-TWRmin)/TWRmin;
+        maxQ_pct_error = 100 * abs(dynamic_pressure-dynamicPressMax)/dynamicPressMax;
         fprintf("Stage Length = %.4f | Stage Width = %.4f | Inner Width = %.4f\n", stage_length, stage_width, inner_width);
         fprintf("Target Altitude = %.2f | Current Altitude = %.2f | Error = %0.2f%%\n", target_altitude, final_altitude, altitude_pct_error);
-        fprintf("Target max TWR = %.2f | Current max TWR = %.2f | Error = %0.2f%%\n", TWRmax, max(TWR), TWRmax_pct_error);
-        fprintf("Target min TWR = %.2f | Current min TWR = %.2f | Error = %0.2f%%\n", TWRmin, TWR(1), TWRmin_pct_error);
-        if (~tolerated(final_altitude, target_altitude, tolerance) || ~tolerated(max(TWR), TWRmax, tolerance) || ~tolerated(TWR(1), TWRmin, tolerance)) %altitude          
-            bs = tolerated(final_altitude, target_altitude, tolerance) + tolerated(max(TWR), TWRmax, tolerance) + tolerated(TWR(1), TWRmin, tolerance); %bs factor
+        fprintf("Target max Q = %.2f | Current max Q = %.2f | Error = %0.2f%%\n", dynamicPressMax, dynamic_pressure, maxQ_pct_error);
+        if (~tolerated(final_altitude, target_altitude, tolerance) || ~tolerated(dynamicPressure, dynamicPressMax, tolerance)) %altitude          
             stage_length_factor = 1;
             stage_width_factor = 1;
             inner_width_factor = 1;
             
-            %Altitude           
-            %factor = ((sqrt(target_altitude/final_altitude)-1)/(3*(3+bs))) + 1;
-            if (~tolerated(final_altitude, target_altitude, tolerance)) 
-            factor = (target_altitude/final_altitude)^(1/3);
-            stage_length_factor = stage_length_factor * factor;
-            stage_width_factor = stage_width_factor * factor;
-            inner_width_factor = inner_width_factor / factor;   
-            end
+            altFactor = (target_altitude/final_altitude)^(1/3);
+            qFactor = (dynamicPressMax/dynamicPressure)^(1/3);
             
-            %TWR max
-            if (~tolerated(max(TWR), TWRmax, tolerance))
-            %factor = ((sqrt(TWRmax/max(TWR))-1)/(3*(3+bs))) + 1;
-            factor = (TWRmax/max(TWR))^(1/3);
-            stage_length_factor = stage_length_factor * factor;
-            stage_width_factor = stage_width_factor * factor;
-            %inner_width_factor = inner_width_factor / factor;
-            end
-                     
-            %TWR min
-            if (~tolerated(max(TWR), TWRmax, tolerance))
-            %factor = ((sqrt(TWRmin/TWR(1))-1)/(3*(3+bs))) + 1;
-            factor = (TWRmin/TWR(1))^(1/3);
-            stage_length_factor = stage_length_factor * factor;
-            stage_width_factor = stage_width_factor / factor;
-            inner_width_factor = inner_width_factor * factor;
-            end
+            
+            %%todo the bois
             
             fprintf("Scaling Stage Length by %0.4f\n", stage_length_factor);
             fprintf("Scaling Stage Width by %0.4f\n", stage_width_factor);
