@@ -104,7 +104,9 @@ function [stage_length, stage_width, inner_width, ...
             %insert codeblock here
             Errors = ones(n,n,n);
             %fill dimensions
+            %\/\/ THE TESSERACT OF POSSIBILITIES \/\/
             Dimensions = zeros(n,n,n,3); %val(:,:,:,1) = stage_length | val(:,:,:,2) = stage_width | val(:,:,:,3) = inner_width
+            %/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
             %stage length
             data = linspace(stage_length_low, stage_length_high, n);
             for x = 1:n
