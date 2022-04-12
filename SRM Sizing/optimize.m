@@ -1,10 +1,12 @@
-%[length, width, inner_width, final_simulation] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 5, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.12, 2.75)
+%[length, width, inner_width, final_simulation, deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 5, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.12, 2.75)
 
 %% solid rocket motor sizing code
-function [length, width, inner_width, final_simulation] = ...
-    optimize(dt, delta_V, TWR, ...
+function [length, width, inner_width, final_simulation, ...
+    deltaVWorking, massWorking, diameterWorking, lengthWorking, ...
+    inradWorking] = optimize(dt, delta_V, TWR, ...
     maxPres, shape, f_inert, payloadMass, atmoPressure, ...
-    OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs, diaU, lenU)
+    OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, ...
+    o_densities, o_fracs, diaU, lenU)
     %% Inputs
     %dt: time step (s)
     % test
@@ -34,7 +36,7 @@ function [length, width, inner_width, final_simulation] = ...
     %% Program
     %passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens]
     
-    max_iterations = 3;
+    max_iterations = 2;
     %deltaV should be controlled by length??
     %TWR should be controlled by width and inner radius??
 
@@ -59,6 +61,7 @@ function [length, width, inner_width, final_simulation] = ...
                 [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(dt, len, dia, inrad, maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs);
                 NewEntry = [dia, len, inrad, M(end), deltaV]
                 LoopResults(index, :) = NewEntry;
+                fprintf('This is iteration #%0.0f.', index);
             end
         end
     end
@@ -80,5 +83,7 @@ function [length, width, inner_width, final_simulation] = ...
     final_simulation = 1;
     
     %output thrust to weight ratio
-    fprintf('The thrust to weight ratio will be: %.2f', TWR);
+    fprintf('The thrust to weight ratio will be: %.2f/n', TWR);
+    
+    %WritetoExcel(deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking);
 end
