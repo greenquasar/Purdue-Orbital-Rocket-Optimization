@@ -1,7 +1,8 @@
-%[length, width, inner_width, final_simulation, deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 5, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.12, 2.75)
+%[length, width, inner_width, final_simulation, mass, deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 5, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.12, 2.75)
 
+%add max q function that takes an array of dynamic pressures
 %% solid rocket motor sizing code
-function [length, width, inner_width, final_simulation, ...
+function [length, width, inner_width, final_simulation, mass, ...
     deltaVWorking, massWorking, diameterWorking, lengthWorking, ...
     inradWorking] = optimize(dt, delta_V, TWR, ...
     maxPres, shape, f_inert, payloadMass, atmoPressure, ...
@@ -59,7 +60,7 @@ function [length, width, inner_width, final_simulation, ...
             for inrad = linspace(inradL, inradU, max_iterations)
                 index = index + 1;
                 [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(dt, len, dia, inrad, maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs);
-                NewEntry = [dia, len, inrad, M(end), deltaV]
+                NewEntry = [dia, len, inrad, M(end), deltaV];
                 LoopResults(index, :) = NewEntry;
                 fprintf('This is iteration #%0.0f.', index);
             end
@@ -69,11 +70,11 @@ function [length, width, inner_width, final_simulation, ...
     %select best candidate based off the mass
     
     indexDW = LoopResults(:,5) > delta_V;
-    deltaVWorking = LoopResults(indexDW, 5)
-    massWorking = LoopResults(indexDW,4)
-    diameterWorking = LoopResults(indexDW, 1)
-    lengthWorking = LoopResults(indexDW, 2)
-    inradWorking = LoopResults(indexDW, 3)
+    deltaVWorking = LoopResults(indexDW, 5);
+    massWorking = LoopResults(indexDW,4);
+    diameterWorking = LoopResults(indexDW, 1);
+    lengthWorking = LoopResults(indexDW, 2);
+    inradWorking = LoopResults(indexDW, 3);
     
     mass = min(massWorking)
     width = diameterWorking(mass == massWorking);
@@ -85,5 +86,5 @@ function [length, width, inner_width, final_simulation, ...
     %output thrust to weight ratio
     fprintf('The thrust to weight ratio will be: %.2f/n', TWR);
     
-    %WritetoExcel(deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking);
+    WritetoExcel(deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking);
 end
