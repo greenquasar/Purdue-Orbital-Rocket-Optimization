@@ -60,9 +60,9 @@ function [length, width, inner_width, final_simulation, mass, ...
             for inrad = linspace(inradL, inradU, max_iterations)
                 index = index + 1;
                 [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(dt, len, dia, inrad, maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs);
-                NewEntry = [dia, len, inrad, M(end), deltaV];
+                NewEntry = [dia, len, inrad, M(1), deltaV];
                 LoopResults(index, :) = NewEntry;
-                fprintf('This is iteration #%0.0f.', index);
+                fprintf('This is iteration #%0.0f.\n', index);
             end
         end
     end

@@ -1,4 +1,4 @@
-%[length2, width2, inner_width2, newfinal_simulation2, mass2, length1, width1, inner_width1, newfinal_simulation1, mass1] =  complete_optimization(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 5, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.12, 2.75)
+%[length2, width2, inner_width2, newfinal_simulation2, mass2, length1, width1, inner_width1, newfinal_simulation1, mass1] = complete_optimization(1, 4300, 1.5, 3447378.64659, 'circular', 0.077, 5, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.12, 2.75)
 
 %30-70 deltaV or 50-50 deltaV
 %solid rocket motor sizing 
@@ -34,16 +34,17 @@ function [length2, width2, inner_width2, newfinal_simulation2, mass2, ...
 clear
 clc
 %Optimize Stage 2
-[length2, width2, inner_width2, final_simulation2, mass2, deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, 1.33, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.12, 2.75)
-fprintf('Stage 2 length is %0.4f\n', length2);
-fprintf('Stage 2 width is %0.4f\n', width2);
-fprintf('Stage 2 inner width is %0.4f\n', inner_width2);
-fprintf('Stage 2 mass is %0.4f\n', mass2);
-stage1payloadmass = mass2 + 1.33;
+[length2, width2, inner_width2, final_simulation2, mass2, deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking] = optimize(1, 4300, 1.5, 3447378.64659, 'circular', 0.077, 1.33, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.12, 2.75)
+fprintf('Stage 2 length is %0.4f meters.\n', length2);
+fprintf('Stage 2 width is %0.4f meters.\n', width2);
+fprintf('Stage 2 inner width is %0.4f meters.\n', inner_width2);
+fprintf('Stage 2 mass is %0.4f kilograms.\n', mass2 - 1.33);
+stage1payloadmass = mass2;
 %Optimize Stage 1
-[length1, width1, inner_width1, final_simulation1, mass1, newdeltaVWorking, newmassWorking, newdiameterWorking, newlengthWorking, newinradWorking] = optimize(1, 4000, 1.5, 3447378.64659, 'circular', 0.077, stage1payloadmass, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.15, 10)
-fprintf('Stage 1 length is %0.4f\n', length1);
-fprintf('Stage 1 width is %0.4f\n', width1);
-fprintf('Stage 1 inner width is %0.4f\n', inner_width1);
-fprintf('Stage 1 mass is %0.4f\n', mass1);
+[length1, width1, inner_width1, final_simulation1, mass1, newdeltaVWorking, newmassWorking, newdiameterWorking, newlengthWorking, newinradWorking] = optimize(1, 4300, 1.5, 3447378.64659, 'circular', 0.077, stage1payloadmass, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.15, 10)
+fprintf('Stage 1 length is %0.4f meters.\n', length1);
+fprintf('Stage 1 width is %0.4f meters.\n', width1);
+fprintf('Stage 1 inner width is %0.4f meters.\n', inner_width1);
+fprintf('Stage 1 mass is %0.4f kilograms.\n', mass1 - mass2);
+fprintf('Total Mass of the Rocket is %0.4f kilograms.\n', mass1);
 end
