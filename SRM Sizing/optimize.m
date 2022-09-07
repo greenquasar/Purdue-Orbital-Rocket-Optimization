@@ -28,7 +28,7 @@ function [length, width, inner_width, final_simulation, mass, ...
     %o_t: oxidizer inlet temp (K)
     %o_dens: fuel density in solid state (kg/m^3)
     %o_fracs: mass fractions for each oxidizer (same length as oxidizer, sum to 1)
-    
+    %altitude: minimum height 10,000 feet, aka 3,048 m.
     %% Outputs
     %length: length of stage (m)
     %width: width of stage (m)
@@ -36,7 +36,7 @@ function [length, width, inner_width, final_simulation, mass, ...
     %final_simulation: Simulate_Reverse final output as a list
     %% Program
     %passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens]
-    
+    target_altitude = 3048;
     max_iterations = 2;
     %deltaV should be controlled by length??
     %TWR should be controlled by width and inner radius??
@@ -69,7 +69,7 @@ function [length, width, inner_width, final_simulation, mass, ...
     
     %select best candidate based off the mass
     
-    indexDW = LoopResults(:,5) > delta_V;
+    indexDW = LoopResults(:,5) > delta_V; %The loop results need to include the minimum altitude and maximum Q.
     deltaVWorking = LoopResults(indexDW, 5);
     massWorking = LoopResults(indexDW,4);
     diameterWorking = LoopResults(indexDW, 1);
@@ -86,5 +86,5 @@ function [length, width, inner_width, final_simulation, mass, ...
     %output thrust to weight ratio
     fprintf('The thrust to weight ratio will be: %.2f/n', TWR);
     
-    WritetoExcel(deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking);
+    WritetoExcel(deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking); %We need to change what it writes and add final altitude.
 end
