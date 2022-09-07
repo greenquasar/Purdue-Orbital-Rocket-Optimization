@@ -250,6 +250,3 @@ function area = Area(shape, w)
     end
 end
 
-
-%%test test test%%
-%%gpete%%
