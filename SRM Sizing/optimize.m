@@ -3,7 +3,7 @@
 %% solid rocket motor sizing code
 function [length, width, inner_width, final_simulation, mass, ...
     deltaVWorking, massWorking, diameterWorking, lengthWorking, ...
-    inradWorking] = optimize(dt, delta_V, TWR, ...
+    inradWorking] = optimize(dt, maxQ, TWR, ...
     maxPres, shape, f_inert, payloadMass, atmoPressure, ...
     OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, ...
     o_densities, o_fracs, diaU, lenU, startingalt)
@@ -35,15 +35,15 @@ function [length, width, inner_width, final_simulation, mass, ...
     %final_simulation: Simulate_Reverse final output as a list
     %% Program
     %passthrough_args = [maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuel, f_temp, f_dens, oxidizer, o_temp, o_dens]
-    
-    max_iterations = 2;
+    target_alt = 3048; %altitude in meters
+    max_iterations = 20;
     %deltaV should be controlled by length??
     %TWR should be controlled by width and inner radius??
 
     %start with a guess for length and width
     %loop if iter less than max_iter
-    diaL = 0.1 * diaU; 
-    lenL = 0.1 * lenU; 
+    diaL = 0.1; 
+    lenL = 0.5; 
     
     %upper values needed to be added
     %upper diameter = 8 inches
@@ -51,18 +51,18 @@ function [length, width, inner_width, final_simulation, mass, ...
     
     index = 0;
     NewEntry = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    LoopResults = zeros(9,9);
-    for dia = linspace(diaL, diaU, max_iterations)
+    LoopResults = zeros(7,7);
+    for dia = linspace(diaL, diaU, max_iterations/2)
         inradU = (dia / 2) * 0.8;
-        inradL = 0.03 * (dia / 2);
+        inradL = 0.02;
         for len = linspace(lenU,lenL, max_iterations)
-            for inrad = linspace(inradL, inradU, max_iterations)
+            for inrad = linspace(inradL, inradU, max_iterations./4)
                 index = index + 1;
                 [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, specificImpulse, propMass, C_t, C_star] = Simulate_Reverse(dt, len, dia, inrad, maxPres, shape, f_inert, payloadMass, atmoPressure, OF, fuels, f_temps, f_densities, f_fracs, oxidizers, o_temps, o_densities, o_fracs);
-                %added altitude analysis here to account for altitude and
-                %dynamic pressure
-                [alt, drag, velocity, DP] = altitude_analysis(Thrust, M, dt, inrad * 2, startingalt);
-                NewEntry = [dia, len, inrad, M(1), deltaV, alt, DP];
+                RocketDrawer(len, dia, inrad);
+                %added altitude analysis here to account for altitude and dynamic pressure
+                [alt, drag, velocity, dynamicPressure] = altitude_analysis(Thrust, M, dt, dia, startingalt);
+                NewEntry = [dia, len, inrad, M(1), deltaV, max(alt), max(dynamicPressure)];
                 LoopResults(index, :) = NewEntry;
                 fprintf('This is iteration #%0.0f.\n', index);
             end
@@ -74,15 +74,16 @@ function [length, width, inner_width, final_simulation, mass, ...
     
     %use altitude and dynamic pressure instead of deltaV
     %indexDW = LoopResults(:,5) > delta_V; 
-    indexDW = find(LoopResults(:,6) > 3048 + startingalt & LoopResults(:,7) < (maxPres/1000));
+    indexDW = find(LoopResults(:,6) > target_alt + startingalt & LoopResults(:,7) < maxQ);
 
     %deltaVWorking = LoopResults(indexDW, 5);
+    altitudeWorking = LoopResults(indexDW, 6);
     massWorking = LoopResults(indexDW,4);
     diameterWorking = LoopResults(indexDW, 1);
     lengthWorking = LoopResults(indexDW, 2);
     inradWorking = LoopResults(indexDW, 3);
     
-    mass = min(massWorking)
+    mass = min(massWorking);
     width = diameterWorking(mass == massWorking);
     length = lengthWorking(mass == massWorking);
     inner_width = inradWorking(mass == massWorking);
@@ -90,7 +91,10 @@ function [length, width, inner_width, final_simulation, mass, ...
     final_simulation = 1;
     
     %output thrust to weight ratio
-    fprintf('The thrust to weight ratio will be: %.2f/n', TWR);
+    fprintf("The length will be: \n", lengthWorking);
+    fprintf("The diameter will be: \n", diameterWorking);
+    fprintf("The web distance will be: \n", inradWorking);
     
-    WritetoExcel(deltaVWorking, massWorking, diameterWorking, lengthWorking, inradWorking);
+    WritetoExcel(altitudeWorking, massWorking, diameterWorking, lengthWorking, inradWorking);
+    
 end
