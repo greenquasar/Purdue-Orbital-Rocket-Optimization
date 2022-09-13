@@ -53,7 +53,7 @@ function [length, width, inner_width, final_simulation, mass, ...
     NewEntry = [0, 0, 0, 0, 0, 0, 0, 0, 0];
     LoopResults = zeros(7,7);
     for dia = linspace(diaL, diaU, max_iterations/2)
-        inradU = (dia / 2) * 0.8;
+        inradU = (dia / 2) * 0.05;
         inradL = 0.02;
         for len = linspace(lenU,lenL, max_iterations)
             for inrad = linspace(inradL, inradU, max_iterations./4)
