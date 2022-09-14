@@ -74,6 +74,7 @@ function [length, width, inner_width, final_simulation, mass, ...
     
     %use altitude and dynamic pressure instead of deltaV
     %indexDW = LoopResults(:,5) > delta_V; 
+    indexDW = find(LoopResults(:,6) > target_alt + startingalt & LoopResults(:,6) < 3658 + startingalt); %LoopResults(:,7) < maxQ);
     
     %deltaVWorking = LoopResults(indexDW, 5);
     altitudeWorking = LoopResults(indexDW, 6);
