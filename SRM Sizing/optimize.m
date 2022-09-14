@@ -53,8 +53,8 @@ function [length, width, inner_width, final_simulation, mass, ...
     NewEntry = [0, 0, 0, 0, 0, 0, 0, 0, 0];
     LoopResults = zeros(7,7);
     for dia = linspace(diaL, diaU, max_iterations/2)
-        inradU = (dia / 2) * 0.05;
-        inradL = 0.02;
+        inradU = (dia / 1.5);
+        inradL = 0.05;
         for len = linspace(lenU,lenL, max_iterations)
             for inrad = linspace(inradL, inradU, max_iterations./4)
                 index = index + 1;
@@ -74,8 +74,7 @@ function [length, width, inner_width, final_simulation, mass, ...
     
     %use altitude and dynamic pressure instead of deltaV
     %indexDW = LoopResults(:,5) > delta_V; 
-    indexDW = find(LoopResults(:,6) > target_alt + startingalt & LoopResults(:,7) < maxQ);
-
+    
     %deltaVWorking = LoopResults(indexDW, 5);
     altitudeWorking = LoopResults(indexDW, 6);
     massWorking = LoopResults(indexDW,4);
@@ -90,11 +89,6 @@ function [length, width, inner_width, final_simulation, mass, ...
 
     final_simulation = 1;
     
-    %output thrust to weight ratio
-    fprintf("The length will be: \n", lengthWorking);
-    fprintf("The diameter will be: \n", diameterWorking);
-    fprintf("The web distance will be: \n", inradWorking);
-    
-    WritetoExcel(altitudeWorking, massWorking, diameterWorking, lengthWorking, inradWorking);
+    %WritetoExcel(altitudeWorking, massWorking, diameterWorking, lengthWorking, inradWorking);
     
 end
