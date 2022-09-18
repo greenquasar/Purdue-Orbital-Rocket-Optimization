@@ -58,7 +58,7 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     Isp = [];
    
     [C_t(1), C_star(1), Isp(1)] = SRM_CEA(maxPres,OF,fuels,f_temps,f_fracs,oxidizers,o_temps,o_fracs,atmoPressure);
-    
+    disp(C_star(1));
     %error checking
     if (stage_width <= innerWidth)
        error("Width is less than or equal to inner width. Impossible!");
@@ -78,8 +78,8 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
         o_dens = o_dens + o_densities(i) * o_fracs(i);
     end
         
-    propDens = (OF * o_dens + f_dens) / (OF + 1); %density of combined propellant (kg/m^3)
-    
+    %propDens = (OF * o_dens + f_dens) / (OF + 1); %density of combined propellant (kg/m^3)
+    propDens = 1758; %kg/m^3, from prop
     %Finding throat area for end of burn
     % / 1000 is to make all constant terms in kg*s/mm, 1st 1-e6 is to make maxPres in Mpa, last 1e6 is to make At in m^2
     A_t = ((Surface_Area(shape, r_max, stage_length) * propDens * C * C_star(1) / 1000) / (g * (maxPres*1e-6)^(1-n)))*1e-6;  %[m^2]
@@ -104,7 +104,8 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     inertMass = totalMass-propMass;
     M(1)=inertMass;
     i = 2;
-    
+    aIhateTheFrench = 0.0174; %in/s
+    nTheEnglishAsWell = 0.04;
     my_waitbar1 = waitbar(0, "Simulation Progress:");
     while W(i-1) > r_min
         %disp(string(W(i-1)/r_max)-innerWidth)
@@ -121,14 +122,15 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
         P_c = [P_c, 0];
         % / 1000 is to make all constant terms in kg*s/mm, 1st 1e6 is to make At in mm^2, last 1e6 is to make P_c in Pa
         P_c(i) = ((Surface_Area(shape, W(i-1), stage_length) * propDens * C * C_star(i) / 1000) / (g * A_t*1e6))^(1/ (1 - n))*1e6; %Pa
-
+        P_c_inStupidImperialUnits(i) = P_c(i) * 0.000145038;
         %Thrust (N)
         %Thrust(i) = C_t(i) * A_t * P_c(i);
         %Burn Rate
         R_b(i) = (C * (P_c(i)*1e-6) ^ n) * 0.001;   %Change Pressure unit to MPA and Burn rate to m/s
+        R_b_dumb(i) = (aIhateTheFrench * P_c_inStupidImperialUnits(i)^nTheEnglishAsWell); %in in/s
         %New web distance
         W(i) = W(i-1) - R_b(i) * dt;
-       
+ 
         %calculate propellant mass
         %Mdot(i) = (Area(shape, W(i-1)) - Area(shape, W(i)))*stage_length*propDens;
         Mdot(i) = Surface_Area(shape, W(i), stage_length)*R_b(i)*propDens;
@@ -204,6 +206,12 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     grid on;
     movegui('northwest');
     
+    figure(2)
+    plot(flip(T), R_b_dumb);
+    title('Burn Rate in silly Units');
+    xlabel('time (s)');
+    ylabel('in/s');
+    
     %%flip things for output
     M = flip(M);
     Thrust = flip(Thrust);
@@ -212,7 +220,8 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     R_b = flip(R_b);
     Mdot = flip(Mdot);
     TWR = flip(TWR);
-
+    disp(propMass);
+    disp(propMass+inertMass);
 end
 
 function area = Surface_Area(shape, w, l)
