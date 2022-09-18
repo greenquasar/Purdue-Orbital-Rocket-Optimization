@@ -42,8 +42,8 @@ function [length, width, inner_width, final_simulation, mass, ...
 
     %start with a guess for length and width
     %loop if iter less than max_iter
-    diaL = 0.1; 
-    lenL = 0.5; 
+    diaL = 0.05; 
+    lenL = 0.05; 
     
     %upper values needed to be added
     %upper diameter = 8 inches
@@ -53,8 +53,8 @@ function [length, width, inner_width, final_simulation, mass, ...
     NewEntry = [0, 0, 0, 0, 0, 0, 0, 0, 0];
     LoopResults = zeros(7,7);
     for dia = linspace(diaL, diaU, max_iterations/2)
-        inradU = (dia / 1.5);
-        inradL = 0.05;
+        inradU = 0.03;
+        inradL = 0.01;
         for len = linspace(lenU,lenL, max_iterations)
             for inrad = linspace(inradL, inradU, max_iterations./4)
                 index = index + 1;
@@ -63,6 +63,7 @@ function [length, width, inner_width, final_simulation, mass, ...
                 %added altitude analysis here to account for altitude and dynamic pressure
                 [alt, drag, velocity, dynamicPressure] = altitude_analysis(Thrust, M, dt, dia, startingalt);
                 NewEntry = [dia, len, inrad, M(1), deltaV, max(alt), max(dynamicPressure)];
+                disp(NewEntry);
                 LoopResults(index, :) = NewEntry;
                 fprintf('This is iteration #%0.0f.\n', index);
             end
@@ -74,9 +75,9 @@ function [length, width, inner_width, final_simulation, mass, ...
     
     %use altitude and dynamic pressure instead of deltaV
     %indexDW = LoopResults(:,5) > delta_V; 
-    indexDW = find(LoopResults(:,6) > target_alt + startingalt & LoopResults(:,6) < 3658 + startingalt); %LoopResults(:,7) < maxQ);
+    indexDW = find((LoopResults(:,6) > target_alt + startingalt) & (LoopResults(:,6) < 3658 + startingalt)); %LoopResults(:,7) < maxQ);
     
-    %deltaVWorking = LoopResults(indexDW, 5);
+    deltaVWorking = LoopResults(indexDW, 5);
     altitudeWorking = LoopResults(indexDW, 6);
     massWorking = LoopResults(indexDW,4);
     diameterWorking = LoopResults(indexDW, 1);
