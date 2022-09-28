@@ -22,3 +22,6 @@ Athena II First Stage [test]---
 
 optimize call with actual parameters:
 [length, width, inner_width, final_simulation, LoopResults, indexDW] = optimize(0.05, 350000, 1.5, 3447378.64659, 'circular', 0.077, 2.5, 10407, 2.22, ["HTPB"], [298], [920], [1], ["NH4CLO4(I)", "AL"], [298, 200], [1950,2710], [0.88, 0.12], 0.15, 1.0, 0)
+
+edited call based on Sam Ludlam recommendations -> there is an error when run
+[length, width, inner_width, final_simulation, LoopResults, indexDW] = optimize(0.05, 350000, 1.5, 3447378.64659, 'circular', 0.077, 2.5, 10407, 2.22, ["HTPB", "AL"], [298, 298], [920, 2710], [88, 12], ["NH4CLO4(I)"], [298], [1950], [100], 0.15, 1.0, 0) 
