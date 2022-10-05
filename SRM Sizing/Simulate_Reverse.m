@@ -82,7 +82,7 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     propDens = 1758; %kg/m^3, from prop
     %Finding throat area for end of burn
     % / 1000 is to make all constant terms in kg*s/mm, 1st 1-e6 is to make maxPres in Mpa, last 1e6 is to make At in m^2
-    A_t = ((Surface_Area(shape, r_max, stage_length) * propDens * C * C_star(1) / 1000) / (g * (maxPres*1e-6)^(1-n)))*1e-6;  %[m^2]
+    A_t = ((Surface_Area(shape, r_max, stage_length) * propDens * C * C_star(1) / 1000) / ((maxPres*1e-6)^(1-n)))*1e-6;  %[m^2]
     throatDiameter = 2*sqrt(A_t/pi);    %[m]
     
     
