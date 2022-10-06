@@ -121,7 +121,7 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
         %Chamber pressure
         P_c = [P_c, 0];
         % / 1000 is to make all constant terms in kg*s/mm, 1st 1e6 is to make At in mm^2, last 1e6 is to make P_c in Pa
-        P_c(i) = ((Surface_Area(shape, W(i-1), stage_length) * propDens * C * C_star(i) / 1000) / (g * A_t*1e6))^(1/ (1 - n))*1e6; %Pa
+        P_c(i) = ((Surface_Area(shape, W(i-1), stage_length) * propDens * C * C_star(i) / 1000) / (A_t*1e6))^(1/ (1 - n))*1e6; %Pa
         P_c_inStupidImperialUnits(i) = P_c(i) * 0.000145038;
         %Thrust (N)
         %Thrust(i) = C_t(i) * A_t * P_c(i);
