@@ -220,8 +220,9 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     R_b = flip(R_b);
     Mdot = flip(Mdot);
     TWR = flip(TWR);
-    disp(propMass);
-    disp(propMass+inertMass);
+
+    disp(propMass*1000); %mass in grams
+    disp((propMass+inertMass)*1000); %mass in grams
 end
 
 function area = Surface_Area(shape, w, l)
