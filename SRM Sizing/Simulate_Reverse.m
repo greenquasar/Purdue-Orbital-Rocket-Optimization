@@ -98,9 +98,9 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     
     R_b(1) = (C * (P_c(1) / (1 * 10^6)) ^ n) * 0.001; %Change Pressure unit to MPA and Burn rate to m/s
     propVol = (Area(shape, r_max)-Area(shape, r_min))*stage_length;
-    propMass = propVol*propDens;
+    propMass = propVol*propDens
     f_prop = 1-f_inert;
-    totalMass = propMass/(f_prop) + payloadMass;
+    totalMass = propMass/(f_prop) + payloadMass
     inertMass = totalMass-propMass;
     M(1)=inertMass;
     i = 2;
