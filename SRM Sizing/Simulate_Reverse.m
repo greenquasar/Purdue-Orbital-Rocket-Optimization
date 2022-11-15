@@ -150,7 +150,10 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     avgSpecificImpulse = sum(Isp, 'all')/max(size(Isp));   %max(size(X)) is the same as length(X)
     %%%% Old code (using Riemman Sum): 
     %specificImpulse = trapz(dt,Thrust)/(propMass*g);
-  
+    %Thrust
+    avgThrust = sum(Thrust, 'all')/max(size(Thrust));
+    disp("Average Thrust is");
+    disp(Thrust)
     % Delta-V [m/s]
     v_e = avgSpecificImpulse * g;  %effective exhaust velocity
 
