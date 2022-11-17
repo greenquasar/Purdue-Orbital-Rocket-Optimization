@@ -92,6 +92,7 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     W(1) = r_max;
     P_c(1) = maxPres;
     
+    casingDens = 2.7; %Density of Casing Material, in g/cc
     
     %Rocket Optimized for average Chamber Pressure instead of Maximum PSI
     %P_c(1) = 2530375.93;
@@ -101,7 +102,7 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     propMass = propVol*propDens
     f_prop = 1-f_inert;
     %totalMass = propMass/(f_prop) + payloadMass
-    inertMass = (2.71 * 1000) * (((pi * (0.098^2)) - (pi * (0.091^2))) * stage_length)
+    inertMass = (casingDens * 1000) * (((pi * (0.098^2)) - (pi * (0.091^2))) * stage_length)
     totalMass = propMass + inertMass
     M(1)=inertMass;
     i = 2;
