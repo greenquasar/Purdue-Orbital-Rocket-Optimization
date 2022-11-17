@@ -100,8 +100,9 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     propVol = (Area(shape, r_max)-Area(shape, r_min))*stage_length;
     propMass = propVol*propDens
     f_prop = 1-f_inert;
-    totalMass = propMass/(f_prop) + payloadMass
-    inertMass = totalMass-propMass;
+    %totalMass = propMass/(f_prop) + payloadMass
+    inertMass = (2.71 * 1000) * (((pi * (0.098^2)) - (pi * (0.091^2))) * stage_length)
+    totalMass = propMass + inertMass
     M(1)=inertMass;
     i = 2;
     aIhateTheFrench = 0.0174; %in/s
@@ -153,7 +154,7 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     %Thrust
     avgThrust = sum(Thrust, 'all')/max(size(Thrust));
     disp("Average Thrust is");
-    disp(Thrust)
+    disp(avgThrust)
     % Delta-V [m/s]
     v_e = avgSpecificImpulse * g;  %effective exhaust velocity
 
@@ -224,8 +225,8 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     Mdot = flip(Mdot);
     TWR = flip(TWR);
 
-    disp(propMass*1000); %mass in grams
-    disp((propMass+inertMass)*1000); %mass in grams
+    %disp(propMass*1000); %mass in grams
+    %disp((propMass+inertMass)*1000); %mass in grams
 end
 
 function area = Surface_Area(shape, w, l)
