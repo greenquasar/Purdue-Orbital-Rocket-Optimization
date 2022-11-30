@@ -99,11 +99,17 @@ function [T, W, P_c, Thrust, TWR, R_b, burn_time, M, Mdot, A_t, deltaV, avgSpeci
     
     R_b(1) = (C * (P_c(1) / (1 * 10^6)) ^ n) * 0.001; %Change Pressure unit to MPA and Burn rate to m/s
     propVol = (Area(shape, r_max)-Area(shape, r_min))*stage_length;
-    propMass = propVol*propDens
+    propMass = propVol*propDens;
+    disp("Propellant Mass is (kg):")
+    disp(propMass)
     f_prop = 1-f_inert;
     %totalMass = propMass/(f_prop) + payloadMass
-    inertMass = (casingDens * 1000) * (((pi * (0.098^2)) - (pi * (0.091^2))) * stage_length)
-    totalMass = propMass + inertMass
+    inertMass = (casingDens * 1000) * (((pi * ((0.098/2)^2)) - (pi * ((0.091/2)^2))) * stage_length);
+    disp("Inert Mass is (kg):")
+    disp(inertMass)
+    totalMass = propMass + inertMass;
+    disp("Total Mass is (kg):")
+    disp(totalMass)
     M(1)=inertMass;
     i = 2;
     aIhateTheFrench = 0.0174; %in/s
